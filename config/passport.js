@@ -3,7 +3,7 @@ const LocalStrategy = require('passport-local').Strategy;
 // const FacebookTokenStrategy = require('passport-facebook-token')
 var User = require("../models/users")
 // var GoogleTokenStrategy = require('passport-google-token').Strategy;
-const Key = require('./index')
+
 // passport.use(new FacebookTokenStrategy({
 //   clientID: Key.FACEBOOK_APP_ID,
 //   clientSecret: Key.FACEBOOK_APP_SECRET

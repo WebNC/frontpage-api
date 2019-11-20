@@ -6,9 +6,10 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var key = require('./config/index')
 var app = express();
 var cors = require('cors')
+require('dotenv').config()
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
@@ -18,7 +19,7 @@ require('./config/passport');
 
 // Set up mongoose connection
 var mongoose = require('mongoose');
-var mongoDB = key.MONGODB_URL
+var mongoDB = `mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_URL}/${process.env.DB}?retryWrites=true`
 mongoose.connect(mongoDB, { useNewUrlParser: true,useUnifiedTopology: true });
 mongoose.Promise = global.Promise;
 var db = mongoose.connection;

@@ -1,5 +1,6 @@
 const jwt = require('express-jwt');
-const key = require('./index')
+require('dotenv').config()
+
 const getTokenFromHeaders = (req) => {
   const { authorization } = req.headers;
   if(authorization && authorization.split(' ')[0] === 'Bearer') {
@@ -10,12 +11,12 @@ const getTokenFromHeaders = (req) => {
 
 const auth = {
   required: jwt({
-    secret: key.JWT_KEY,
+    secret: process.env.JWT_KEY,
     userProperty: 'payload',
     getToken: getTokenFromHeaders,
   }),
   optional: jwt({
-    secret: key.JWT_KEY,
+    secret: process.env.JWT_KEY,
     userProperty: 'payload',
     getToken: getTokenFromHeaders,
     credentialsRequired: false,
