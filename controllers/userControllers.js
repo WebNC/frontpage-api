@@ -1,71 +1,71 @@
-var User = require('../models/users');
-const passport = require("passport")
+const passport = require('passport');
+const User = require('../models/users');
+
 
 // var fs = require('fs');
 // var path = require ('path');
 
 exports.register = (req, res) => {
-    if (!req.body.email || !req.body.password) {
-        return res.status(400).send({
-            message: "Some params is missing."
-        })
-    }
-    User.findOne({email:req.body.email})
-        .then(user => {
-            if(user){
-                return res.status(400).send({message: "Email exist"})
-            }
-            else{
-                const user = new User({
-                    email: req.body.email,
-                    username: req.body.username,
-                    age: req.body.age,
-                    sex:req.body.sex,
-                    address:req.body.address,
-                    degree:req.body.degree,
-                    phone:req.body.phone
-                })
-                user.setPassword(req.body.password)
-                user.save()
-                    .then(data => {
-                        res.send(data.toAuthJSON());
-                    })
-                    .catch(err => {
-                        res.status(500).send({
-                            message: err.message || "Some error occurred while creating the User."
-                        });
-                    });
-            }
-        })
-    
-}
+  if (!req.body.email || !req.body.password) {
+    return res.status(400).send({
+      message: 'Some params is missing.',
+    });
+  }
+  User.findOne({ email: req.body.email })
+    .then((user) => {
+      if (user) {
+        res.status(400).send({ message: 'Email exist' });
+      } else {
+        const newUser = new User({
+          email: req.body.email,
+          username: req.body.username,
+          age: req.body.age,
+          sex: req.body.sex,
+          address: req.body.address,
+          degree: req.body.degree,
+          phone: req.body.phone,
+        });
+        newUser.setPassword(req.body.password);
+        newUser.save()
+          .then((data) => {
+            res.send(data.toAuthJSON());
+          })
+          .catch((err) => {
+            res.status(500).send({
+              message: err.message || 'Some error occurred while creating the User.',
+            });
+          });
+      }
+    });
+  return true;
+};
 exports.login = (req, res, next) => {
-    if (!req.body.email) {
-        return res.status(500).send({
-            message: "Email is require."
-        });
-    }
+  if (!req.body.email) {
+    return res.status(500).send({
+      message: 'Email is require.',
+    });
+  }
 
-    if (!req.body.password) {
-        return res.status(500).send({
-            message: "Password is require."
-        });
-    }
+  if (!req.body.password) {
+    return res.status(500).send({
+      message: 'Password is require.',
+    });
+  }
 
-    passport.authenticate('local', { session: false }, (err, passportUser) => {
-        if (err) {
-            return next(err);
-        }
-       
-        if (passportUser) {
-            const user = passportUser;
-            return res.json({ user: user.toAuthJSON() });
-        }
-        return res.status(400).send({
-            message: "Some thing went wrong."
-        })
-    })(req, res, next);
-}
+  passport.authenticate('local', { session: false }, (err, passportUser) => {
+    if (err) {
+      return next(err);
+    }
+    if (passportUser) {
+      const user = passportUser;
+      return res.json({ user: user.toAuthJSON() });
+    }
+    return res.status(400).send({
+      message: 'Some thing went wrong.',
+    });
+  })(req, res, next);
+  return true;
+};
 // exports.loginFacebook = (req, res, next) =>{
 //     passport.authenticate('facebook-token', { session: false }, (err, passportUser) => {
 //         if (err) {
@@ -124,17 +124,17 @@ exports.login = (req, res, next) => {
 // }
 
 
-
 exports.me = (req, res) => {
-    const { id } = req.payload;
-    return User.findById(id)
-        .then((user) => {
-            if (!user) {
-                return res.sendStatus(400);
-            }
-            res.send(user);
-        });
-}
+  const { id } = req.payload;
+  return User.findById(id)
+    .then((user) => {
+      if (!user) {
+        return res.sendStatus(400);
+      }
+      res.send(user);
+      return true;
+    });
+};
 // exports.edit = (req, res) => {
 //     const { id } = req.payload;
 //     const {username,password,email,age} = req.body

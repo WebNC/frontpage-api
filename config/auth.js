@@ -1,9 +1,9 @@
 const jwt = require('express-jwt');
-require('dotenv').config()
+require('dotenv').config();
 
 const getTokenFromHeaders = (req) => {
   const { authorization } = req.headers;
-  if(authorization && authorization.split(' ')[0] === 'Bearer') {
+  if (authorization && authorization.split(' ')[0] === 'Bearer') {
     return authorization.split(' ')[1];
   }
   return null;
