@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 const jwt = require('express-jwt');
 require('dotenv').config();
 

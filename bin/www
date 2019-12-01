@@ -1,10 +1,9 @@
-#!/usr/bin/env node
+/* eslint-disable linebreak-style */
+// #!/usr/bin/env node
 
-/**
+/*
  * Module dependencies.
  */
-
-
 const debug = require('debug')('webnc-adminpage-api:server');
 const http = require('http');
 const app = require('../app');

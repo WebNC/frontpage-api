@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable indent */
 const mongoose = require('mongoose');
@@ -5,10 +6,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const saltRounds = 10;
-
-
 const { Schema } = mongoose;
-
 const UserSchema = new Schema({
     username: { type: String, required: true },
     email: { type: String, require: true },
