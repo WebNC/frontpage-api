@@ -11,4 +11,6 @@ router.get('/', (req, res) => {
 router.post('/login', auth.optional, userControllers.login);
 router.post('/register', auth.optional, userControllers.register);
 router.get('/me', auth.required, userControllers.me);
+router.post('/login/facebook', userControllers.loginFacebook);
+router.post('/login/google', userControllers.loginGoogle);
 module.exports = router;

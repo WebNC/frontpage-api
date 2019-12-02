@@ -1,31 +1,25 @@
-/* eslint-disable linebreak-style */
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-// const FacebookTokenStrategy = require('passport-facebook-token')
+const FacebookTokenStrategy = require('passport-facebook-token');
+const GoogleTokenStrategy = require('passport-google-token').Strategy;
 const User = require('../models/users');
-// var GoogleTokenStrategy = require('passport-google-token').Strategy;
+require('dotenv').config();
 
-// passport.use(new FacebookTokenStrategy({
-//   clientID: Key.FACEBOOK_APP_ID,
-//   clientSecret: Key.FACEBOOK_APP_SECRET
-// }, function(accessToken, refreshToken, profile, done) {
-//   return done(null,profile)
-// }
-// ));
-// passport.use(new GoogleTokenStrategy({
-//   clientID: Key.GOOGLE_CLIENT_ID,
-//   clientSecret: Key.GOOGLE_CLIENT_SECRET
-// },
-// function(accessToken, refreshToken, profile, done) {
-//   return done(null,profile)
-// }
-// ));
+passport.use(new FacebookTokenStrategy({
+  clientID: process.env.FACEBOOK_APP_ID,
+  clientSecret: process.env.FACEBOOK_APP_SECRET,
+}, ((accessToken, refreshToken, profile, done) => done(null, profile))));
+passport.use(new GoogleTokenStrategy({
+  clientID: process.env.GOOGLE_CLIENT_ID,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+},
+((accessToken, refreshToken, profile, done) => done(null, profile))));
 
 passport.use(new LocalStrategy({
   usernameField: 'email',
   passwordField: 'password',
 },
-(email, password, done) => {
+((email, password, done) => {
   User.findOne({ email })
     .then((user) => {
       if (!user || !user.validatePassword(password)) {
@@ -33,4 +27,4 @@ passport.use(new LocalStrategy({
       }
       return done(null, user);
     }).catch(done);
-}));
+})));
