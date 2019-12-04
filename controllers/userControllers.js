@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable no-param-reassign */
 const passport = require('passport');
 const User = require('../models/users');
@@ -21,7 +22,7 @@ exports.register = (req, res) => {
         newUser.setPassword(req.body.password);
         newUser.save()
           .then((data) => {
-            res.send(data.toAuthJSON());
+            res.send({ user: data.toAuthJSON() });
           })
           .catch((err) => {
             res.status(500).send({
@@ -139,6 +140,8 @@ exports.resgiterTeacher = (req, res) => {
         newUser.skill = req.body.skill;
         newUser.sex = req.body.sex;
         newUser.major = req.body.major;
+        newUser.intro = req.body.intro;
+        newUser.address = req.body.address;
         // write something
         newUser.save();
         res.status(200).send({
