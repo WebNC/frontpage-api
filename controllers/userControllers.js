@@ -4,6 +4,7 @@ const passport = require('passport');
 const User = require('../models/users');
 
 exports.register = (req, res) => {
+  console.log(req.body.password);
   if (!req.body.email || !req.body.password) {
     return res.status(400).send({
       message: 'Some params is missing.',

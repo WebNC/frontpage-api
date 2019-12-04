@@ -26,7 +26,7 @@ const UserSchema = new Schema({
     facebookId: { type: String },
 });
 
-UserSchema.methods.setPassword = (password) => {
+UserSchema.methods.setPassword = function (password) {
     this.passwordHash = bcrypt.hashSync(password, saltRounds);
 };
 
