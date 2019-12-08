@@ -185,7 +185,8 @@ exports.me = async (req, res) => {
       const ele = skillL.find((elem) => elem._id == element);
       return ele.name;
     });
-    res.send(userList);
+    user.skill = userList;
+    res.send(user);
   }
   return res;
 };
