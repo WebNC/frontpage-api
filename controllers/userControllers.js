@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable eqeqeq */
 /* eslint-disable linebreak-style */
 /* eslint-disable no-param-reassign */
@@ -180,12 +181,10 @@ exports.me = async (req, res) => {
   if (!user) {
     res.sendStatus(400);
   } else {
-    const userList = user.skill.map((element) => {
-      // eslint-disable-next-line no-underscore-dangle
+    user.skill.map((element) => {
       const ele = skillL.find((elem) => elem._id == element);
       return ele.name;
     });
-    user.skill = userList;
     res.send(user);
   }
   return res;
