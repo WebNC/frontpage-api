@@ -1,3 +1,4 @@
+/* eslint-disable eqeqeq */
 /* eslint-disable linebreak-style */
 /* eslint-disable no-param-reassign */
 const passport = require('passport');
@@ -172,16 +173,20 @@ exports.resgiterTeacher = (req, res) => {
   return res;
 };
 
-exports.me = (req, res) => {
+exports.me = async (req, res) => {
   const { id } = req.payload;
-  return User.findById(id)
-    .then((user) => {
-      if (!user) {
-        return res.sendStatus(400);
-      }
-      res.send(user);
-      return true;
-    });
+  const skillL = await Skill.find({ isDeleted: false });
+  const user = await User.findById(id);
+  user.skill.forEach((element) => {
+    const ele = skillL.find((elem) => elem.id == element);
+    return ele.name;
+  });
+  if (!user) {
+    res.sendStatus(400);
+  } else {
+    res.send(user);
+  }
+  return res;
 };
 
 exports.getSkill = async (req, res) => {
