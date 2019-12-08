@@ -24,6 +24,7 @@ const UserSchema = new Schema({
     passwordHash: { type: String, require: true },
     googleId: { type: String },
     facebookId: { type: String },
+    isBlocked: { type: Boolean, default: undefined },
 });
 
 UserSchema.methods.setPassword = function (password) {

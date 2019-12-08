@@ -2,9 +2,9 @@
 /* eslint-disable no-param-reassign */
 const passport = require('passport');
 const User = require('../models/users');
+const Skill = require('../models/skills');
 
 exports.register = (req, res) => {
-  console.log(req.body.password);
   if (!req.body.email || !req.body.password) {
     return res.status(400).send({
       message: 'Some params is missing.',
@@ -53,7 +53,14 @@ exports.login = (req, res, next) => {
     }
     if (passportUser) {
       const user = passportUser;
-      return res.json({ user: user.toAuthJSON() });
+      if (passportUser.isBlocked) {
+        res.status(400).send({
+          message: 'Tài khoản bị khóa.',
+        });
+      } else {
+        res.json({ user: user.toAuthJSON() });
+      }
+      return res;
     }
     return res.status(400).send({
       message: 'Some thing went wrong.',
@@ -81,15 +88,21 @@ exports.loginFacebook = (req, res, next) => {
             user.username = passportUser.displayName;
             user.email = passportUser.emails[0].value;
           }
-          user.save();
-          return res.json({ user: user.toAuthJSON() });
+          if (user.isBlocked) {
+            res.status(400).send({
+              message: 'Tài khoản bị khóa.',
+            });
+          } else {
+            user.save();
+            res.json({ user: user.toAuthJSON() });
+          }
         });
     } else {
-      return res.status(400).send({
+      res.status(400).send({
         message: 'Some thing went wrong.',
       });
     }
-    return true;
+    return res;
   })(req, res, next);
   return true;
 };
@@ -113,15 +126,21 @@ exports.loginGoogle = (req, res, next) => {
             user.username = passportUser.displayName;
             user.email = passportUser.emails[0].value;
           }
-          user.save();
-          return res.json({ user: user.toAuthJSON() });
+          if (user.isBlocked) {
+            res.status(400).send({
+              message: 'Tài khoản bị khóa.',
+            });
+          } else {
+            user.save();
+            res.json({ user: user.toAuthJSON() });
+          }
         });
     } else {
-      return res.status(400).send({
+      res.status(400).send({
         message: 'Some thing went wrong.',
       });
     }
-    return true;
+    return res;
   })(req, res, next);
   return true;
 };
@@ -163,6 +182,13 @@ exports.me = (req, res) => {
       res.send(user);
       return true;
     });
+};
+
+exports.getSkill = async (req, res) => {
+  const skill = await Skill.find({ isDeleted: false });
+  return res.status(200).send({
+    message: skill,
+  });
 };
 // exports.edit = (req, res) => {
 //     const { id } = req.payload;
