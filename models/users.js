@@ -16,7 +16,7 @@ const UserSchema = new Schema({
     skill: { type: Array },
     intro: { type: String },
     sex: { type: String },
-    address: { type: String },
+    address: { type: Array },
     degree: { type: String },
     phone: { type: String },
     url: { type: String },
@@ -24,7 +24,7 @@ const UserSchema = new Schema({
     passwordHash: { type: String, require: true },
     googleId: { type: String },
     facebookId: { type: String },
-    isBlocked: { type: Boolean, default: undefined },
+    isBlocked: { type: Boolean, default: false },
 });
 
 UserSchema.methods.setPassword = function (password) {
