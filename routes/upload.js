@@ -17,3 +17,5 @@ const storage = cloudinaryStorage({
 const parser = multer({ storage });
 
 router.post('/avatar', parser.single('avatar'), user.upload);
+
+module.exports = router;
