@@ -177,14 +177,15 @@ exports.me = async (req, res) => {
   const { id } = req.payload;
   const skillL = await Skill.find({ isDeleted: false });
   const user = await User.findById(id);
-  user.skill.forEach((element) => {
-    const ele = skillL.find((elem) => elem.id == element);
-    return ele.name;
-  });
   if (!user) {
     res.sendStatus(400);
   } else {
-    res.send(user);
+    const userList = user.skill.map((element) => {
+      // eslint-disable-next-line no-underscore-dangle
+      const ele = skillL.find((elem) => elem._id == element);
+      return ele.name;
+    });
+    res.send(userList);
   }
   return res;
 };

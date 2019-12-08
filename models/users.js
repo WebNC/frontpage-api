@@ -16,7 +16,7 @@ const UserSchema = new Schema({
     skill: { type: Array },
     intro: { type: String },
     sex: { type: String },
-    address: { type: Array },
+    address: { type: Object },
     degree: { type: String },
     phone: { type: String },
     url: { type: String },
