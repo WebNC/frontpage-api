@@ -190,27 +190,7 @@ exports.getSkill = async (req, res) => {
     message: skill,
   });
 };
-// exports.edit = (req, res) => {
-//     const { id } = req.payload;
-//     const {username,password,email,age} = req.body
-//     return User.findById(id)
-//         .then((user) => {
-//             if (!user) {
-//                 return res.sendStatus(400);
-//             }
-//             user.email = email||user.email
-//             user.age = age
-//             user.username = username||user;
-//             if(password)
-//                 user.setPassword(password)
-//             user.save()
-//             res.send(user)
-//         }).catch(err => {
-//             res.status(500).send({
-//                 message: err.message || "Some error occurred while update the User."
-//             });
-//         });
-// }
+
 
 exports.upload = (req, res) => {
   const { id } = req.payload;
@@ -228,15 +208,3 @@ exports.upload = (req, res) => {
       });
     });
 };
-
-// exports.show =  (req, res) => {
-//     const fileName = req.params.name;
-//     console.log('fileName', fileName);
-//     if (!fileName) {
-//         return res.send({
-//             status: false,
-//             message: 'no filename specified',
-//         })
-//     }
-//     res.sendFile(path.resolve(`./images/${fileName}`));
-// }

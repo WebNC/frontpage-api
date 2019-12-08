@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 const User = require('../models/users');
 
 exports.getAllUserTeacher = async (req, res) => {
@@ -24,4 +25,76 @@ exports.getDetailTeacher = async (req, res) => {
   return res.status(200).send({
     message: teacher,
   });
+};
+
+
+exports.editInfo = (req, res) => {
+  const {
+    id,
+    username,
+    email,
+    phone,
+    birthday,
+    sex,
+  } = req.body;
+  return User.findById(id)
+    .then((user) => {
+      if (!user) {
+        return res.sendStatus(400);
+      }
+      user.email = email || user.email;
+      user.birthday = birthday || user.birthday;
+      user.username = username || user.username;
+      user.phone = phone || user.phone;
+      user.sex = sex || user.sex;
+      user.save();
+      return res.send(user);
+    }).catch((err) => {
+      res.status(500).send({
+        message: err.message || 'Some error occurred while update the User.',
+      });
+    });
+};
+
+
+exports.editIntro = (req, res) => {
+  const {
+    id,
+    intro,
+  } = req.body;
+  return User.findById(id)
+    .then((user) => {
+      if (!user) {
+        return res.sendStatus(400);
+      }
+      user.intro = intro || user.intro;
+      user.save();
+      return res.send(user);
+    }).catch((err) => {
+      res.status(500).send({
+        message: err.message || 'Some error occurred while update the User.',
+      });
+    });
+};
+
+exports.editMajorSkill = (req, res) => {
+  const {
+    id,
+    major,
+    skill,
+  } = req.body;
+  return User.findById(id)
+    .then((user) => {
+      if (!user) {
+        return res.sendStatus(400);
+      }
+      user.major = major || user.major;
+      user.skill = skill || user.skill;
+      user.save();
+      return res.send(user);
+    }).catch((err) => {
+      res.status(500).send({
+        message: err.message || 'Some error occurred while update the User.',
+      });
+    });
 };
