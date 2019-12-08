@@ -212,22 +212,22 @@ exports.getSkill = async (req, res) => {
 //         });
 // }
 
-// exports.upload = (req, res) => {
-//     const { id } = req.payload;
-//     User.findById(id)
-//         .then((user) => {
-//             if (!user) {
-//                 return res.sendStatus(400);
-//             }
-//             user.url = req.file.url
-//             user.save()
-//             res.send(user.url)
-//         }).catch(err => {
-//             res.status(500).send({
-//                 message: err.message || "Some error occurred while update the User."
-//             });
-//     });
-// }
+exports.upload = (req, res) => {
+  const { id } = req.payload;
+  User.findById(id)
+    .then((user) => {
+      if (!user) {
+        return res.sendStatus(400);
+      }
+      user.url = req.file.url;
+      user.save();
+      return res.send(user.url);
+    }).catch((err) => {
+      res.status(500).send({
+        message: err.message || 'Some error occurred while update the User.',
+      });
+    });
+};
 
 // exports.show =  (req, res) => {
 //     const fileName = req.params.name;
