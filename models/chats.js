@@ -12,4 +12,4 @@ const ReportSchema = new Schema({
     content: { type: Array },
 });
 
-module.exports = mongoose.model('Report', ReportSchema);
+module.exports = mongoose.model('Chat', ReportSchema);

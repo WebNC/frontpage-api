@@ -9,4 +9,4 @@ const SkillSchema = new Schema({
     isDeleted: { type: Boolean, default: false },
 });
 
-module.exports = mongoose.model('Report', SkillSchema);
+module.exports = mongoose.model('Skill', SkillSchema);
