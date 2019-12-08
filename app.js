@@ -40,7 +40,7 @@ app.use(cors());
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/upload', uploadRouter);
-app.useuser('/teacher', teacherRouter);
+app.use('/teacher', teacherRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
