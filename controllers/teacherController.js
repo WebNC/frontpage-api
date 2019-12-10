@@ -19,7 +19,7 @@ exports.getNumberUserTeacher = async (req, res) => {
 };
 
 exports.getDetailTeacher = async (req, res) => {
-  const { id } = req.body;
+  const { id } = req.params;
   const teacher = await User.findById(id);
   teacher.passwordHash = null;
   return res.status(200).send({

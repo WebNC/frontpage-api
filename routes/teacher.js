@@ -7,7 +7,7 @@ const teacherController = require('../controllers/teacherController');
 
 router.get('/number', teacherController.getNumberUserTeacher);
 router.get('/list/:page', teacherController.getAllUserTeacher);
-router.get('/detail', teacherController.getDetailTeacher);
+router.get('/detail/:id', teacherController.getDetailTeacher);
 
 router.post('/edit/info', teacherController.editIntro);
 router.post('/edit/info', teacherController.editInfo);
