@@ -5,12 +5,12 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 const ReportSchema = new Schema({
-    reportID: { type: Schema.Types.ObjectId, required: true },
+    courseID: { type: Schema.Types.ObjectId, required: true },
     userID: { type: Schema.Types.ObjectId, required: true },
-    date: { type: Date },
+    date: { type: Date, default: Date.now() },
     content: { type: String },
     // solved, unsolve
-    status: { type: Boolean },
+    status: { type: Boolean, default: false },
 });
 
 module.exports = mongoose.model('Report', ReportSchema);

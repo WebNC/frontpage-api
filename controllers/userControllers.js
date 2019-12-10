@@ -6,13 +6,13 @@ const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const User = require('../models/users');
 const Skill = require('../models/skills');
-const sendMail = require('./maillController');
+// const sendMail = require('./maillController');
 
 const key = '25698';
-const sendMailActive = async (idUser, email) => {
-  const token = await jwt.sign({ id: idUser }, key, { expiresIn: '1h' });
-  sendMail.sendMail(email, token);
-};
+// const sendMailActive = async (idUser, email) => {
+//   const token = await jwt.sign({ id: idUser }, key, { expiresIn: '1h' });
+//   sendMail.sendMail(email, token);
+// };
 
 exports.register = (req, res) => {
   if (!req.body.email || !req.body.password) {
@@ -33,9 +33,9 @@ exports.register = (req, res) => {
         newUser.setPassword(req.body.password);
         newUser.save()
           .then((data) => {
-            if (req.body.type == 'Người học') {
-              sendMailActive(data._id, data.email);
-            }
+            // if (req.body.type == 'Người học') {
+            //   sendMailActive(data._id, data.email);
+            // }
             res.send({ user: data.toAuthJSON() });
           })
           .catch((err) => {
@@ -70,11 +70,11 @@ exports.login = (req, res, next) => {
         res.status(400).send({
           message: 'Tài khoản bị khóa.',
         });
-      } else if (!passportUser.isActived) {
-        sendMailActive(user._id, user.email);
-        res.status(400).send({
-          message: 'Tài khoản chưa kích hoạt.',
-        });
+      // } else if (!passportUser.isActived) {
+      //   sendMailActive(user._id, user.email);
+      //   res.status(400).send({
+      //     message: 'Tài khoản chưa kích hoạt.',
+      //   });
       } else {
         res.json({ user: user.toAuthJSON() });
       }
@@ -183,7 +183,7 @@ exports.registerTeacher = (req, res) => {
         newUser.price = req.body.price;
         // write something
         await newUser.save();
-        sendMailActive(newUser._id, newUser.email);
+        // sendMailActive(newUser._id, newUser.email);
         res.status(200).send({
           message: 'Success',
         });
