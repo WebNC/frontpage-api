@@ -100,11 +100,24 @@ exports.editMajorSkill = (req, res) => {
       });
     });
 };
+const checkPrice = (price, type) => {
+  switch (type) {
+    case 1:
+      return price < 100000;
+    case 2:
+      return (price >= 100000) && (price < 500000);
+    case 3:
+      return price >= 500000;
+    default:
+      return false;
+  }
+};
+
 exports.filterTeacher = async (req, res) => {
-  const { local, price, skill } = req.query;
+  const { local, type, skill } = req.query;
   const user = await User.find({ type: 'Người dạy' });
   const result = user.filter((ele) => (local ? ele.address.district === local : true)
-    && (price ? ele.price <= price : true)
+    && (type ? checkPrice(ele.price, type) : true)
     && (skill ? ele.skill.include(skill) : true));
   res.status(200).send({
     user: result,
