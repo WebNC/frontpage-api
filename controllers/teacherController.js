@@ -114,7 +114,7 @@ const checkPrice = (price, type) => {
 };
 
 exports.filterTeacher = async (req, res) => {
-  const { local, type, skill } = req.query;
+  const { local, type, skill } = req.body;
   const user = await User.find({ type: 'Người dạy' });
   const result = user.filter((ele) => (local ? ele.address.district === local : true)
     && (type ? checkPrice(ele.price, type) : true)
