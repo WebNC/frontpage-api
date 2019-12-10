@@ -36,6 +36,7 @@ exports.editInfo = (req, res) => {
     phone,
     birthday,
     sex,
+    price,
   } = req.body;
   return User.findById(id)
     .then((user) => {
@@ -47,6 +48,7 @@ exports.editInfo = (req, res) => {
       user.username = username || user.username;
       user.phone = phone || user.phone;
       user.sex = sex || user.sex;
+      user.price = price || user.price;
       user.save();
       return res.send(user);
     }).catch((err) => {
@@ -97,4 +99,14 @@ exports.editMajorSkill = (req, res) => {
         message: err.message || 'Some error occurred while update the User.',
       });
     });
+};
+exports.filterTeacher = async (req, res) => {
+  const { local, price, skill } = req.query;
+  const user = await User.find({ type: 'Người dạy' });
+  const result = user.filter((ele) => (local ? ele.address.district === local : true)
+    && (price ? ele.price <= price : true)
+    && (skill ? ele.skill.include(skill) : true));
+  res.status(200).send({
+    user: result,
+  });
 };

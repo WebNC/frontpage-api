@@ -1,7 +1,8 @@
 const nodemailer = require('nodemailer');
 
+const urlFrontend = 'http://localhost:3001';
 
-exports.sendMail = async () => {
+exports.sendMail = async (email, token) => {
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -11,9 +12,10 @@ exports.sendMail = async () => {
   });
   const mailOptions = {
     from: 'teammn9@gmail.com', // sender address
-    to: 'minh.jin255@gmail.com', // list of receivers
-    subject: 'Subject of your email', // Subject line
-    html: '<p>Your html here</p>', // plain text body
+    to: email, // list of receivers
+    subject: 'Kích hoạt tài khoản', // Subject line
+    html: `<p>Vui lòng click vào link <a href=${urlFrontend}/active/${token}>này</a> để kích hoạt tài khoản</p>`, // plain text body
   };
-  await transporter.sendMail(mailOptions);
+  const result = await transporter.sendMail(mailOptions);
+  return result;
 };

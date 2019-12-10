@@ -10,8 +10,10 @@ router.get('/', (req, res) => {
 });
 router.post('/login', auth.optional, userControllers.login);
 router.post('/register', auth.optional, userControllers.register);
-router.post('/register-teacher', auth.optional, userControllers.resgiterTeacher);
+router.post('/register-teacher', auth.optional, userControllers.registerTeacher);
 router.get('/me', auth.required, userControllers.me);
 router.post('/login/facebook', userControllers.loginFacebook);
 router.post('/login/google', userControllers.loginGoogle);
+
+router.get('/verified-account/:token', userControllers.verifiedAccount);
 module.exports = router;

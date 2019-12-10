@@ -3,8 +3,16 @@
 /* eslint-disable linebreak-style */
 /* eslint-disable no-param-reassign */
 const passport = require('passport');
+const jwt = require('jsonwebtoken');
 const User = require('../models/users');
 const Skill = require('../models/skills');
+const sendMail = require('./maillController');
+
+const key = '25698';
+const sendMailActive = async (idUser, email) => {
+  const token = await jwt.sign({ id: idUser }, key, { expiresIn: '1h' });
+  sendMail.sendMail(email, token);
+};
 
 exports.register = (req, res) => {
   if (!req.body.email || !req.body.password) {
@@ -25,6 +33,9 @@ exports.register = (req, res) => {
         newUser.setPassword(req.body.password);
         newUser.save()
           .then((data) => {
+            if (req.body.type == 'Người học') {
+              sendMailActive(data._id, data.email);
+            }
             res.send({ user: data.toAuthJSON() });
           })
           .catch((err) => {
@@ -58,6 +69,11 @@ exports.login = (req, res, next) => {
       if (passportUser.isBlocked) {
         res.status(400).send({
           message: 'Tài khoản bị khóa.',
+        });
+      } else if (!passportUser.isActived) {
+        sendMailActive(user._id, user.email);
+        res.status(400).send({
+          message: 'Tài khoản chưa kích hoạt.',
         });
       } else {
         res.json({ user: user.toAuthJSON() });
@@ -147,10 +163,10 @@ exports.loginGoogle = (req, res, next) => {
   return true;
 };
 
-exports.resgiterTeacher = (req, res) => {
+exports.registerTeacher = (req, res) => {
   const { id } = req.body;
   User.findOne({ _id: id })
-    .then((user) => {
+    .then(async (user) => {
       if (!user) {
         res.status(400).send({
           message: 'No user',
@@ -164,8 +180,10 @@ exports.resgiterTeacher = (req, res) => {
         newUser.major = req.body.major;
         newUser.intro = req.body.intro;
         newUser.address = req.body.address;
+        newUser.price = req.body.price;
         // write something
-        newUser.save();
+        await newUser.save();
+        sendMailActive(newUser._id, newUser.email);
         res.status(200).send({
           message: 'Success',
         });
@@ -198,7 +216,6 @@ exports.getSkill = async (req, res) => {
   });
 };
 
-
 exports.upload = (req, res) => {
   const { id } = req.payload;
   User.findById(id)
@@ -214,4 +231,23 @@ exports.upload = (req, res) => {
         message: err.message || 'Some error occurred while update the User.',
       });
     });
+};
+
+exports.verifiedAccount = async (req, res) => {
+  const { token } = req.params;
+  jwt.verify(token, key, async (err, decoded) => {
+    if (err) {
+      res.status(500).send({
+        message: 'Token sai hoặc hết hạn',
+      });
+    } else {
+      const user = await User.findById(decoded.id);
+      user.isActived = true;
+      await user.save();
+      res.status(400).send({
+        message: 'User đã được kích hoạt',
+      });
+    }
+    return res;
+  });
 };

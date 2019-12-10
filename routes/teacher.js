@@ -5,11 +5,12 @@ const router = express.Router();
 const teacherController = require('../controllers/teacherController');
 
 
-router.get('/number/:page', teacherController.getNumberUserTeacher);
-router.get('/list', teacherController.getAllUserTeacher);
+router.get('/number', teacherController.getNumberUserTeacher);
+router.get('/list/:page', teacherController.getAllUserTeacher);
 router.get('/detail', teacherController.getDetailTeacher);
 
 router.post('/edit/info', teacherController.editIntro);
 router.post('/edit/info', teacherController.editInfo);
 router.post('/edit/major-skill', teacherController.editMajorSkill);
+router.post('/filter', teacherController.filterTeacher);
 module.exports = router;

@@ -21,10 +21,12 @@ const UserSchema = new Schema({
     phone: { type: String },
     url: { type: String },
     type: { type: String, required: true },
+    price: { type: Number },
     passwordHash: { type: String, require: true },
     googleId: { type: String },
     facebookId: { type: String },
     isBlocked: { type: Boolean, default: false },
+    isActived: { type: Boolean, default: false },
 });
 
 UserSchema.methods.setPassword = function (password) {
