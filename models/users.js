@@ -50,7 +50,6 @@ UserSchema.methods.generateJWT = function () {
 };
 
 UserSchema.methods.toAuthJSON = function () {
-    console.log(this.type);
     return {
         id: this._id,
         username: this.username,

@@ -9,7 +9,7 @@ router.get('/number', teacherController.getNumberUserTeacher);
 router.get('/list/:page', teacherController.getAllUserTeacher);
 router.get('/detail/:id', teacherController.getDetailTeacher);
 
-router.post('/edit/info', teacherController.editIntro);
+router.post('/edit/intro', teacherController.editIntro);
 router.post('/edit/info', teacherController.editInfo);
 router.post('/edit/major-skill', teacherController.editMajorSkill);
 router.post('/filter', teacherController.filterTeacher);
