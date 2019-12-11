@@ -1,5 +1,7 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable no-param-reassign */
 const User = require('../models/users');
+const Skill = require('../models/skills');
 
 exports.getAllUserTeacher = async (req, res) => {
   const { page } = req.params;
@@ -50,6 +52,12 @@ exports.editInfo = (req, res) => {
       user.sex = sex || user.sex;
       user.price = price || user.price;
       user.save();
+      const skillL = Skill.find({ isDeleted: false });
+      const userList = user.skill.map((element) => {
+        const ele = skillL.find((elem) => elem._id == element);
+        return { id: ele._id, name: ele.name };
+      });
+      user.skill = userList;
       return res.send(user);
     }).catch((err) => {
       res.status(500).send({

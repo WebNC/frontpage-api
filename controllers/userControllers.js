@@ -217,7 +217,7 @@ exports.getSkill = async (req, res) => {
 };
 
 exports.upload = (req, res) => {
-  const { id } = req.payload;
+  const { id } = req.body;
   User.findById(id)
     .then((user) => {
       if (!user) {
@@ -225,7 +225,7 @@ exports.upload = (req, res) => {
       }
       user.url = req.file.url;
       user.save();
-      return res.send(user.url);
+      return res.send(user);
     }).catch((err) => {
       res.status(500).send({
         message: err.message || 'Some error occurred while update the User.',
