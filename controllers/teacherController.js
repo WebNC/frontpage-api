@@ -22,7 +22,7 @@ exports.getNumberUserTeacher = async (req, res) => {
   });
 };
 exports.getTeacherRatio = async (id) => {
-  const contractList = await Contract.find({ teacherID: id });
+  const contractList = await Contract.find({ teacherID: id, isDeleted: false });
   const successList = contractList.filter((ele) => ele.status === 'Thành công');
   const successRatio = contractList.length != 0
     ? (successList.length / contractList.length) * 100 : 0;

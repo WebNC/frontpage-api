@@ -88,6 +88,22 @@ exports.ratingContract = async (req, res) => {
   }
   return res;
 };
+exports.deleteContract = async (req, res) => {
+  const { id } = req.body;
+  const result = await Contract.findById(id);
+  if (result) {
+    result.isDeleted = true;
+    await result.save();
+    res.status(200).send({
+      message: 'done',
+    });
+  } else {
+    res.status(500).send({
+      message: 'Cannot find contract',
+    });
+  }
+  return res;
+};
 exports.reportContract = async (req, res) => {
   const report = new Report({
     courseID: req.body.courseID,
@@ -116,7 +132,7 @@ exports.getStudentContract = async (id) => {
 
 exports.payment = async (req, res) => {
   const { id } = req.body;
-  const result = await Contract.findById(id);
+  const result = await Contract.find({ _id: id, isDeleted: false });
   if (result) {
     result.statusPay = true;
     res.status(200).send({
