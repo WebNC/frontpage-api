@@ -12,10 +12,10 @@ const ContractSchema = new Schema({
     hour: { type: Number },
     skill: { type: Array },
     // Đang chờ, Bị từ chối, Chấp nhận
-    statusAccept: { type: String, default: 'Đang chờ' },
+    status: { type: String, default: 'Đang chờ' },
     // Đã thanh toán, chưa thanh toán
     statusPay: { type: Boolean, default: false },
-    rating: { type: Number },
+    rating: { type: Number, default: 5 },
     // Array object {id,date,comment}
     comment: { type: Array },
     value: { type: Number },

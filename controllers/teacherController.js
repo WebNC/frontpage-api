@@ -1,16 +1,18 @@
+/* eslint-disable eqeqeq */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-param-reassign */
 const User = require('../models/users');
 const Skill = require('../models/skills');
+const Contract = require('../models/contracts');
 
 exports.getAllUserTeacher = async (req, res) => {
   const { page } = req.params;
   const pageSize = 25;
-  const list = await User.find({ type: 'Người dạy', isBlocked: false })
+  const teacherL = await User.find({ type: 'Người dạy', isBlocked: false })
     .skip(page * pageSize)
     .limit(pageSize);
   return res.status(200).send({
-    message: list,
+    message: teacherL,
   });
 };
 exports.getNumberUserTeacher = async (req, res) => {
@@ -19,11 +21,40 @@ exports.getNumberUserTeacher = async (req, res) => {
     message: num,
   });
 };
+exports.getTeacherRatio = async (id) => {
+  const contractList = await Contract.find({ teacherID: id });
+  const successList = contractList.filter((ele) => ele.status === 'Thành công');
+  const successRatio = contractList.length != 0
+    ? (successList.length / contractList.length) * 100 : 0;
+  let sum = 0;
+  contractList.forEach((element) => {
+    sum += element.rating;
+  });
+
+  let income = 0;
+  const payList = successList.filter((ele) => ele.statusPay === true);
+  payList.forEach((ele) => {
+    income += ele.value;
+  });
+  const rating = contractList.length != 0 ? (sum / contractList.length) : 5;
+  const history = contractList;
+  return [successRatio, rating, history, income];
+};
 
 exports.getDetailTeacher = async (req, res) => {
   const { id } = req.params;
   const teacher = await User.findById(id);
   teacher.passwordHash = null;
+  const skillL = await Skill.find({ isDeleted: false });
+  const teacherList = teacher.skill.map((element) => {
+    const ele = skillL.find((elem) => elem._id == element);
+    return { id: ele._id, name: ele.name };
+  });
+  teacher.skill = teacherList;
+  const [successRatio, rating, history] = this.getTeacherRatio(id);
+  teacher.successRatio = successRatio;
+  teacher.rating = rating;
+  teacher.history = history.filter((ele) => ele.status === 'Thành công');
   return res.status(200).send({
     message: teacher,
   });
@@ -41,7 +72,7 @@ exports.editInfo = (req, res) => {
     price,
   } = req.body;
   return User.findById(id)
-    .then((user) => {
+    .then(async (user) => {
       if (!user) {
         return res.sendStatus(400);
       }
@@ -52,7 +83,7 @@ exports.editInfo = (req, res) => {
       user.sex = sex || user.sex;
       user.price = price || user.price;
       user.save();
-      const skillL = Skill.find({ isDeleted: false });
+      const skillL = await Skill.find({ isDeleted: false });
       const userList = user.skill.map((element) => {
         const ele = skillL.find((elem) => elem._id == element);
         return { id: ele._id, name: ele.name };
@@ -130,4 +161,25 @@ exports.filterTeacher = async (req, res) => {
   res.status(200).send({
     user: result,
   });
+};
+
+
+exports.contractsAccept = async (req, res) => {
+  const { id, status } = req.body.status;
+  const result = await Contract.findById(id);
+  if (result) {
+    if (status == 'Từ chối') {
+      result.status = 'Từ chối';
+    } else {
+      result.status = 'Thành công';
+    }
+    res.status(200).send({
+      contract: result,
+    });
+  } else {
+    res.status(500).send({
+      message: 'Cannot find contract',
+    });
+  }
+  return res;
 };

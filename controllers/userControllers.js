@@ -6,14 +6,22 @@ const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const User = require('../models/users');
 const Skill = require('../models/skills');
+const TeacherController = require('./teacherController');
+const StudentController = require('./studentController');
 // const sendMail = require('./maillController');
 
-const key = '25698';
+
 // const sendMailActive = async (idUser, email) => {
-//   const token = await jwt.sign({ id: idUser }, key, { expiresIn: '1h' });
-//   sendMail.sendMail(email, token);
+//   const key = '25698';
+//   const token = await jwt.sign({ id: idUser }, key);
+//   sendMail.sendMailActive(email, token);
 // };
 
+// const sendMailForget = async (idUser, email) => {
+//   const key = '150917';
+//   const token = await jwt.sign({ id: idUser }, key,{ expiresIn: '1h' });
+//   sendMail.sendMailForget(email, token);
+// };
 exports.register = (req, res) => {
   if (!req.body.email || !req.body.password) {
     return res.status(400).send({
@@ -204,9 +212,36 @@ exports.me = async (req, res) => {
       return { id: ele._id, name: ele.name };
     });
     user.skill = userList;
+    if (user.type == 'Người học') {
+      const history = StudentController.getStudentContract(user._id);
+      user.history = history;
+    } else {
+      const [successRatio, rating, history, income] = TeacherController.getTeacherRatio(id);
+      user.successRatio = successRatio;
+      user.rating = rating;
+      user.history = history;
+      user.income = income;
+    }
     res.send(user);
   }
   return res;
+};
+exports.changePass = (req, res) => {
+  const { id } = req.body;
+  return User.findById(id)
+    .then((user) => {
+      if (!user) {
+        return res.sendStatus(400);
+      }
+      const passHash = user.setPassword(req.body.password);
+      user.passwordHash = passHash || user.passwordHash;
+      user.save();
+      return res.send(user);
+    }).catch((err) => {
+      res.status(500).send({
+        message: err.message || 'Some error occurred while update the User.',
+      });
+    });
 };
 
 exports.getSkill = async (req, res) => {
@@ -235,6 +270,7 @@ exports.upload = (req, res) => {
 
 exports.verifiedAccount = async (req, res) => {
   const { token } = req.params;
+  const key = '25698';
   jwt.verify(token, key, async (err, decoded) => {
     if (err) {
       res.status(500).send({
@@ -250,4 +286,46 @@ exports.verifiedAccount = async (req, res) => {
     }
     return res;
   });
+};
+
+exports.verifiedAccountForget = async (req, res) => {
+  const { token } = req.params;
+  const key = '150917';
+  jwt.verify(token, key, async (err, decoded) => {
+    if (err) {
+      res.status(500).send({
+        message: 'Token sai hoặc hết hạn',
+      });
+    } else {
+      const user = await User.findById(decoded.id);
+      user.isActived = true;
+      await user.save();
+      res.status(400).send({
+        message: 'User đã được kích hoạt',
+      });
+    }
+    return res;
+  });
+};
+
+exports.edit = async (req, res) => {
+  const { id } = req.body;
+  User.findOne({ _id: id })
+    .then(async (user) => {
+      if (!user) {
+        res.status(400).send({
+          message: 'No user',
+        });
+      } else {
+        user.username = req.body.username;
+        user.address = req.body.address;
+        // write something
+        await user.save();
+        // sendMailActive(newUser._id, newUser.email);
+        res.status(200).send({
+          user,
+        });
+      }
+    });
+  return res;
 };

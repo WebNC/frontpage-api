@@ -108,3 +108,24 @@ exports.reportContract = async (req, res) => {
 // exports.chatStudent = (req, res) => {
 
 // };
+
+exports.getStudentContract = async (id) => {
+  const contractList = await Contract.find({ studentID: id });
+  return contractList;
+};
+
+exports.payment = async (req, res) => {
+  const { id } = req.body;
+  const result = await Contract.findById(id);
+  if (result) {
+    result.statusPay = true;
+    res.status(200).send({
+      contract: result,
+    });
+  } else {
+    res.status(500).send({
+      message: 'Cannot find contract',
+    });
+  }
+  return res;
+};
