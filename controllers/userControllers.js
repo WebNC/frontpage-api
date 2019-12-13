@@ -8,14 +8,14 @@ const User = require('../models/users');
 const Skill = require('../models/skills');
 const TeacherController = require('./teacherController');
 const StudentController = require('./studentController');
-// const sendMail = require('./maillController');
+const sendMail = require('./maillController');
 
 
-// const sendMailActive = async (idUser, email) => {
-//   const key = '25698';
-//   const token = await jwt.sign({ id: idUser }, key);
-//   sendMail.sendMailActive(email, token);
-// };
+const sendMailActive = async (idUser, email) => {
+  const key = '25698';
+  const token = await jwt.sign({ id: idUser }, key);
+  sendMail.sendMailActive(email, token);
+};
 
 // const sendMailForget = async (idUser, email) => {
 //   const key = '150917';
@@ -41,9 +41,10 @@ exports.register = (req, res) => {
         newUser.setPassword(req.body.password);
         newUser.save()
           .then((data) => {
-            // if (req.body.type == 'Người học') {
-            //   sendMailActive(data._id, data.email);
-            // }
+            console.log(req.body.type);
+            if (req.body.type == 'Người học') {
+              sendMailActive(data._id, data.email);
+            }
             res.send({ user: data.toAuthJSON() });
           })
           .catch((err) => {
@@ -76,20 +77,20 @@ exports.login = (req, res, next) => {
       const user = passportUser;
       if (passportUser.isBlocked) {
         res.status(400).send({
-          message: 'Tài khoản bị khóa.',
+          message: 'Tài khoản đã bị khóa.',
         });
-      // } else if (!passportUser.isActived) {
-      //   sendMailActive(user._id, user.email);
-      //   res.status(400).send({
-      //     message: 'Tài khoản chưa kích hoạt.',
-      //   });
+      } else if (!passportUser.isActived) {
+        sendMailActive(user._id, user.email);
+        res.status(400).send({
+          message: 'Tài khoản chưa kích hoạt. Hãy kiểm tra email để kích hoạt.',
+        });
       } else {
         res.json({ user: user.toAuthJSON() });
       }
       return res;
     }
     return res.status(400).send({
-      message: 'Some thing went wrong.',
+      message: 'Đã có lỗi xảy ra, vui lòng thử lại!',
     });
   })(req, res, next);
   return true;
@@ -191,7 +192,7 @@ exports.registerTeacher = (req, res) => {
         newUser.price = req.body.price;
         // write something
         await newUser.save();
-        // sendMailActive(newUser._id, newUser.email);
+        sendMailActive(newUser._id, newUser.email);
         res.status(200).send({
           message: 'Success',
         });
@@ -272,16 +273,17 @@ exports.verifiedAccount = async (req, res) => {
   const { token } = req.params;
   const key = '25698';
   jwt.verify(token, key, async (err, decoded) => {
+    console.log(err);
     if (err) {
       res.status(500).send({
-        message: 'Token sai hoặc hết hạn',
+        message: 'Đã xảy ra lỗi khi xác thực.',
       });
     } else {
       const user = await User.findById(decoded.id);
       user.isActived = true;
       await user.save();
       res.status(400).send({
-        message: 'User đã được kích hoạt',
+        message: 'Tài khoản đã được kích hoạt.',
       });
     }
     return res;
