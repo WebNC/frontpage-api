@@ -10,6 +10,7 @@ exports.requestContract = async (req, res) => {
     hour: req.body.hour,
     skill: req.body.skill,
     value: req.body.value,
+    address: req.body.address,
   });
   try {
     await contractM.save();
@@ -45,6 +46,7 @@ exports.editContract = async (req, res) => {
     result.hour = req.body.hour || result.hour;
     result.skill = req.body.skill || result.skill;
     result.value = req.body.value || result.value;
+    result.address = req.body.address || result.address;
     await result.save();
     res.status(200).send({
       contract: result,

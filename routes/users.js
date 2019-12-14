@@ -31,6 +31,8 @@ router.get('/verified-account/:token', userControllers.verifiedAccount);
 
 // 3.6
 router.get('/verified-account-forget/:token', userControllers.verifiedAccountForget);
+router.post('/forget-password/send-email', userControllers.forgetPassword);
+router.post('/forget-password/reset-password', userControllers.resetPassword);
 
 // 5.1
 router.post('/edit', userControllers.edit);

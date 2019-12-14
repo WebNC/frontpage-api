@@ -9,6 +9,7 @@ const ContractSchema = new Schema({
     teacherID: { type: Schema.Types.ObjectId, require: true },
     fromDate: { type: Date },
     toDate: { type: Date },
+    address: { type: Object },
     hour: { type: Number },
     skill: { type: Array },
     // Đang chờ, Bị từ chối, Chấp nhận

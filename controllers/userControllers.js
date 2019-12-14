@@ -17,11 +17,11 @@ const sendMailActive = async (idUser, email) => {
   sendMail.sendMailActive(email, token);
 };
 
-// const sendMailForget = async (idUser, email) => {
-//   const key = '150917';
-//   const token = await jwt.sign({ id: idUser }, key,{ expiresIn: '1h' });
-//   sendMail.sendMailForget(email, token);
-// };
+const sendMailForget = async (idUser, email) => {
+  const key = '150917';
+  const token = await jwt.sign({ id: idUser }, key, { expiresIn: '1h' });
+  sendMail.sendMailForget(email, token);
+};
 exports.register = (req, res) => {
   if (!req.body.email || !req.body.password) {
     return res.status(400).send({
@@ -41,7 +41,6 @@ exports.register = (req, res) => {
         newUser.setPassword(req.body.password);
         newUser.save()
           .then((data) => {
-            console.log(req.body.type);
             if (req.body.type == 'Người học') {
               sendMailActive(data._id, data.email);
             }
@@ -274,7 +273,6 @@ exports.verifiedAccount = async (req, res) => {
   const { token } = req.params;
   const key = '25698';
   jwt.verify(token, key, async (err, decoded) => {
-    console.log(err);
     if (err) {
       res.status(400).send({
         message: 'Đã xảy ra lỗi khi xác thực.',
@@ -300,11 +298,8 @@ exports.verifiedAccountForget = async (req, res) => {
         message: 'Token sai hoặc hết hạn',
       });
     } else {
-      const user = await User.findById(decoded.id);
-      user.isActived = true;
-      await user.save();
-      res.status(400).send({
-        message: 'User đã được kích hoạt',
+      res.status(200).send({
+        id: decoded.id,
       });
     }
     return res;
@@ -322,6 +317,9 @@ exports.edit = async (req, res) => {
       } else {
         user.username = req.body.username;
         user.address = req.body.address;
+        user.sex = req.body.sex;
+        user.phone = req.body.phone;
+        user.birthday = req.body.birthday;
         // write something
         await user.save();
         // sendMailActive(newUser._id, newUser.email);
@@ -330,5 +328,28 @@ exports.edit = async (req, res) => {
         });
       }
     });
+  return res;
+};
+
+exports.forgetPassword = async (req, res) => {
+  const result = await User.findOne({ email: req.body.email });
+  if (!result) {
+    res.status(400).send({ message: 'Email chưa được đăng ký' });
+  } else {
+    sendMailForget(result._id, result.email);
+    res.status(200).send({ message: 'Email đã được gửi đi' });
+  }
+};
+
+exports.resetPassword = async (req, res) => {
+  const { id, password } = req.body;
+  const result = await User.findById(id);
+  if (!result) {
+    res.status(500).send({ message: 'Không tìm thây id' });
+  } else {
+    result.password = result.setPassword(password);
+    await result.save();
+    res.status(200).send({ user: result });
+  }
   return res;
 };
