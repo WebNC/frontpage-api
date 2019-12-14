@@ -227,6 +227,7 @@ exports.me = async (req, res) => {
   }
   return res;
 };
+
 exports.changePass = (req, res) => {
   const { id } = req.body;
   return User.findById(id)
@@ -275,14 +276,14 @@ exports.verifiedAccount = async (req, res) => {
   jwt.verify(token, key, async (err, decoded) => {
     console.log(err);
     if (err) {
-      res.status(500).send({
+      res.status(400).send({
         message: 'Đã xảy ra lỗi khi xác thực.',
       });
     } else {
       const user = await User.findById(decoded.id);
       user.isActived = true;
       await user.save();
-      res.status(400).send({
+      res.status(200).send({
         message: 'Tài khoản đã được kích hoạt.',
       });
     }
