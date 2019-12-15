@@ -37,7 +37,13 @@ exports.getTeacherRatio = async (id) => {
     income += ele.value;
   });
   const rating = contractList.length != 0 ? (sum / contractList.length) : 5;
-  const history = contractList;
+  const teacherList = await User.find({ type: 'Người học' });
+  const contracts = contractList.map((element) => {
+    const elem = teacherList.find((ele) => String(element.studentID) == String(ele._id));
+    const copy = { ...element.toObject(), studentID: elem.username };
+    return copy;
+  });
+  const history = contracts;
   return {
     successRatio,
     rating,
@@ -87,8 +93,8 @@ exports.editInfo = (req, res) => {
       user.phone = phone || user.phone;
       user.sex = sex || user.sex;
       user.price = price || user.price;
-      user.save();
-      const skillL = await Skill.find({ isDeleted: false });
+      await user.save();
+      const skillL = await Skill.find();
       const userList = user.skill.map((element) => {
         const ele = skillL.find((elem) => elem._id == element);
         return { id: ele._id, name: ele.name };
@@ -109,12 +115,18 @@ exports.editIntro = (req, res) => {
     intro,
   } = req.body;
   return User.findById(id)
-    .then((user) => {
+    .then(async (user) => {
       if (!user) {
         return res.sendStatus(400);
       }
       user.intro = intro || user.intro;
-      user.save();
+      await user.save();
+      const skillL = await Skill.find();
+      const userList = user.skill.map((element) => {
+        const ele = skillL.find((elem) => elem._id == element);
+        return { id: ele._id, name: ele.name };
+      });
+      user.skill = userList;
       return res.send(user);
     }).catch((err) => {
       res.status(500).send({
@@ -130,13 +142,19 @@ exports.editMajorSkill = (req, res) => {
     skill,
   } = req.body;
   return User.findById(id)
-    .then((user) => {
+    .then(async (user) => {
       if (!user) {
         return res.sendStatus(400);
       }
       user.major = major || user.major;
       user.skill = skill || user.skill;
-      user.save();
+      await user.save();
+      const skillL = await Skill.find();
+      const userList = user.skill.map((element) => {
+        const ele = skillL.find((elem) => elem._id == element);
+        return { id: ele._id, name: ele.name };
+      });
+      user.skill = userList;
       return res.send(user);
     }).catch((err) => {
       res.status(500).send({

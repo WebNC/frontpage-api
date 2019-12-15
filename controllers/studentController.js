@@ -1,6 +1,7 @@
 /* eslint-disable linebreak-style */
 const Contract = require('../models/contracts');
 const Report = require('../models/reports');
+const Teacher = require('../models/users');
 
 exports.requestContract = async (req, res) => {
   console.log(res.body);
@@ -25,20 +26,6 @@ exports.requestContract = async (req, res) => {
       message: 'Server error',
     });
   }
-};
-exports.readContract = async (req, res) => {
-  const { id } = req.params;
-  const result = await Contract.findById(id);
-  if (result) {
-    res.status(200).send({
-      contract: result,
-    });
-  } else {
-    res.status(500).send({
-      message: 'Cannot find contract',
-    });
-  }
-  return res;
 };
 exports.editContract = async (req, res) => {
   const { id } = req.body;
@@ -132,7 +119,13 @@ exports.reportContract = async (req, res) => {
 
 exports.getStudentContract = async (id) => {
   const contractList = await Contract.find({ studentID: id });
-  return contractList;
+  const teacherList = await Teacher.find({ type: 'Người dạy' });
+  const list = contractList.map((element) => {
+    const elem = teacherList.find((ele) => String(element.teacherID) == String(ele._id));
+    const copy = { ...element.toObject(), teacherID: elem.username };
+    return copy;
+  });
+  return list;
 };
 
 exports.payment = async (req, res) => {

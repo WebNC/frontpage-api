@@ -9,6 +9,7 @@ const Skill = require('../models/skills');
 const TeacherController = require('./teacherController');
 const StudentController = require('./studentController');
 const sendMail = require('./maillController');
+const Contract = require('../models/contracts');
 
 
 const sendMailActive = async (idUser, email) => {
@@ -350,6 +351,30 @@ exports.resetPassword = async (req, res) => {
     result.password = result.setPassword(password);
     await result.save();
     res.status(200).send({ user: result });
+  }
+  return res;
+};
+exports.readContract = async (req, res) => {
+  const { id } = req.params;
+  const contract = await Contract.findById(id);
+  const teacher = await User.findById(contract.teacherID);
+  const student = await User.findById(contract.studentID);
+  const skillL = await Skill.find();
+  const skillList = contract.skill.map((element) => {
+    const ele = skillL.find((elem) => elem._id == element);
+    return { id: ele._id, name: ele.name };
+  });
+  contract.skill = skillList;
+  if (contract) {
+    res.status(200).send({
+      contract,
+      teacher,
+      student,
+    });
+  } else {
+    res.status(500).send({
+      message: 'Cannot find contract',
+    });
   }
   return res;
 };

@@ -6,7 +6,6 @@ const studentController = require('../controllers/studentController');
 
 
 router.post('/contract/request', studentController.requestContract);
-router.get('/contract/read', studentController.readContract);
 router.post('/contract/edit', studentController.editContract);
 router.post('/contract/delete', studentController.deleteContract);
 
