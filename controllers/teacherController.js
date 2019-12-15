@@ -87,8 +87,8 @@ exports.editInfo = (req, res) => {
       user.phone = phone || user.phone;
       user.sex = sex || user.sex;
       user.price = price || user.price;
-      user.save();
-      const skillL = await Skill.find({ isDeleted: false });
+      await user.save();
+      const skillL = await Skill.find();
       const userList = user.skill.map((element) => {
         const ele = skillL.find((elem) => elem._id == element);
         return { id: ele._id, name: ele.name };
@@ -109,12 +109,18 @@ exports.editIntro = (req, res) => {
     intro,
   } = req.body;
   return User.findById(id)
-    .then((user) => {
+    .then(async (user) => {
       if (!user) {
         return res.sendStatus(400);
       }
       user.intro = intro || user.intro;
-      user.save();
+      await user.save();
+      const skillL = await Skill.find();
+      const userList = user.skill.map((element) => {
+        const ele = skillL.find((elem) => elem._id == element);
+        return { id: ele._id, name: ele.name };
+      });
+      user.skill = userList;
       return res.send(user);
     }).catch((err) => {
       res.status(500).send({
@@ -130,13 +136,19 @@ exports.editMajorSkill = (req, res) => {
     skill,
   } = req.body;
   return User.findById(id)
-    .then((user) => {
+    .then(async (user) => {
       if (!user) {
         return res.sendStatus(400);
       }
       user.major = major || user.major;
       user.skill = skill || user.skill;
-      user.save();
+      await user.save();
+      const skillL = await Skill.find();
+      const userList = user.skill.map((element) => {
+        const ele = skillL.find((elem) => elem._id == element);
+        return { id: ele._id, name: ele.name };
+      });
+      user.skill = userList;
       return res.send(user);
     }).catch((err) => {
       res.status(500).send({
