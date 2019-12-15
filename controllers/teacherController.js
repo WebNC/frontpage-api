@@ -40,7 +40,7 @@ exports.getTeacherRatio = async (id) => {
   const teacherList = await User.find();
   const contracts = contractList.map((element) => {
     const elem = teacherList.find((ele) => ele._id === element.studentID);
-    element.teacherID = elem.username;
+    element.studentID = elem.username;
     return element;
   });
   const history = contracts;
