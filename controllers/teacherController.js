@@ -16,7 +16,7 @@ exports.getAllUserTeacher = async (req, res) => {
   });
 };
 exports.getNumberUserTeacher = async (req, res) => {
-  const num = await User.count({ type: 'Người dạy', isBlocked: false });
+  const num = await User.countDocuments({ type: 'Người dạy', isBlocked: false });
   return res.status(200).send({
     message: num,
   });
@@ -38,15 +38,21 @@ exports.getTeacherRatio = async (id) => {
   });
   const rating = contractList.length != 0 ? (sum / contractList.length) : 5;
   const history = contractList;
-  return [successRatio, rating, history, income];
+  return {
+    successRatio,
+    rating,
+    history,
+    income,
+  };
 };
 
 exports.getDetailTeacher = async (req, res) => {
   const { id } = req.params;
   const teacher = await User.findById(id);
   teacher.passwordHash = null;
-  const skillL = await Skill.find({ isDeleted: false });
+  const skillL = await Skill.find();
   const teacherList = teacher.skill.map((element) => {
+    console.log(element);
     const ele = skillL.find((elem) => elem._id == element);
     return { id: ele._id, name: ele.name };
   });

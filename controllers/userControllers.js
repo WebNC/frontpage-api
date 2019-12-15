@@ -89,7 +89,7 @@ exports.login = (req, res, next) => {
       return res;
     }
     return res.status(400).send({
-      message: 'Đã có lỗi xảy ra, vui lòng thử lại!',
+      message: 'Tài khoản hoặc mật khẩu không đúng',
     });
   })(req, res, next);
   return true;
@@ -202,7 +202,7 @@ exports.registerTeacher = (req, res) => {
 
 exports.me = async (req, res) => {
   const { id } = req.payload;
-  const skillL = await Skill.find({ isDeleted: false });
+  const skillL = await Skill.find();
   const user = await User.findById(id);
   if (!user) {
     res.sendStatus(400);
