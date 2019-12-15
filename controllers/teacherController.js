@@ -25,7 +25,7 @@ exports.getTeacherRatio = async (id) => {
   const contractList = await Contract.find({ teacherID: id, isDeleted: false });
   const successList = contractList.filter((ele) => ele.status === 'Thành công');
   const successRatio = contractList.length != 0
-    ? (successList.length / contractList.length) * 100 : 0;
+    ? (successList.length / contractList.length) * 100 : 100;
   let sum = 0;
   contractList.forEach((element) => {
     sum += element.rating;
@@ -52,15 +52,14 @@ exports.getDetailTeacher = async (req, res) => {
   teacher.passwordHash = null;
   const skillL = await Skill.find();
   const teacherList = teacher.skill.map((element) => {
-    console.log(element);
     const ele = skillL.find((elem) => elem._id == element);
     return { id: ele._id, name: ele.name };
   });
   teacher.skill = teacherList;
-  const [successRatio, rating, history] = this.getTeacherRatio(id);
-  teacher.successRatio = successRatio;
-  teacher.rating = rating;
-  teacher.history = history.filter((ele) => ele.status === 'Thành công');
+  const result = await this.getTeacherRatio(id);
+  teacher.successRatio = result.successRatio;
+  teacher.rating = result.rating;
+  teacher.history = result.history.filter((ele) => ele.status === 'Thành công');
   return res.status(200).send({
     message: teacher,
   });

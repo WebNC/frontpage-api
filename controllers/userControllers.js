@@ -213,14 +213,14 @@ exports.me = async (req, res) => {
     });
     user.skill = userList;
     if (user.type == 'Người học') {
-      const history = StudentController.getStudentContract(user._id);
+      const history = await StudentController.getStudentContract(user._id);
       user.history = history;
     } else {
-      const [successRatio, rating, history, income] = TeacherController.getTeacherRatio(id);
-      user.successRatio = successRatio;
-      user.rating = rating;
-      user.history = history;
-      user.income = income;
+      const result = await TeacherController.getTeacherRatio(id);
+      user.successRatio = result.successRatio;
+      user.rating = result.rating;
+      user.history = result.history;
+      user.income = result.income;
     }
     res.send(user);
   }
