@@ -37,4 +37,6 @@ router.post('/forget-password/reset-password', userControllers.resetPassword);
 // 5.1
 router.post('/edit', userControllers.edit);
 
+router.get('/contract/read/:id', userControllers.readContract);
+
 module.exports = router;

@@ -23,20 +23,6 @@ exports.requestContract = async (req, res) => {
     });
   }
 };
-exports.readContract = async (req, res) => {
-  const { id } = req.params;
-  const result = await Contract.findById(id);
-  if (result) {
-    res.status(200).send({
-      contract: result,
-    });
-  } else {
-    res.status(500).send({
-      message: 'Cannot find contract',
-    });
-  }
-  return res;
-};
 exports.editContract = async (req, res) => {
   const { id } = req.body;
   const result = await Contract.findById(id);

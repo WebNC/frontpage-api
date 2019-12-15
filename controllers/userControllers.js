@@ -9,6 +9,7 @@ const Skill = require('../models/skills');
 const TeacherController = require('./teacherController');
 const StudentController = require('./studentController');
 const sendMail = require('./maillController');
+const Contract = require('../models/contracts');
 
 
 const sendMailActive = async (idUser, email) => {
@@ -350,6 +351,20 @@ exports.resetPassword = async (req, res) => {
     result.password = result.setPassword(password);
     await result.save();
     res.status(200).send({ user: result });
+  }
+  return res;
+};
+exports.readContract = async (req, res) => {
+  const { id } = req.params;
+  const result = await Contract.findById(id);
+  if (result) {
+    res.status(200).send({
+      contract: result,
+    });
+  } else {
+    res.status(500).send({
+      message: 'Cannot find contract',
+    });
   }
   return res;
 };
