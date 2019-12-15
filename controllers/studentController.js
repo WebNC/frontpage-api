@@ -119,7 +119,7 @@ exports.reportContract = async (req, res) => {
 
 exports.getStudentContract = async (id) => {
   const contractList = await Contract.find({ studentID: id });
-  const teacherList = await Teacher.find({type: 'Người dạy' });
+  const teacherList = await Teacher.find({ type: 'Người dạy' });
   const list = contractList.map((element) => {
     const elem = teacherList.find((ele) => String(element.teacherID) == String(ele._id));
     const copy = { ...element.toObject(), teacherID: elem.username };

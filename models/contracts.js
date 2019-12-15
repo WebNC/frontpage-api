@@ -21,6 +21,7 @@ const ContractSchema = new Schema({
     comment: { type: Array },
     value: { type: Number },
     isDeleted: { type: Boolean },
+    createAt: { type: Date, default: Date.now() },
 });
 
 module.exports = mongoose.model('Contract', ContractSchema);
