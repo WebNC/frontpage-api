@@ -1,7 +1,9 @@
+/* eslint-disable linebreak-style */
 const Contract = require('../models/contracts');
 const Report = require('../models/reports');
 
 exports.requestContract = async (req, res) => {
+  console.log(res.body);
   const contractM = new Contract({
     studentID: req.body.studentID,
     teacherID: req.body.teacherID,
@@ -11,6 +13,7 @@ exports.requestContract = async (req, res) => {
     skill: req.body.skill,
     value: req.body.value,
     address: req.body.address,
+    isDeleted: false,
   });
   try {
     await contractM.save();

@@ -20,7 +20,7 @@ const ContractSchema = new Schema({
     // Array object {id,date,comment}
     comment: { type: Array },
     value: { type: Number },
-    isDeleted: { type: Boolean },
+    isDeleted: { type: Boolean, default: false },
 });
 
 module.exports = mongoose.model('Contract', ContractSchema);

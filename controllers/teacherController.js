@@ -23,7 +23,7 @@ exports.getNumberUserTeacher = async (req, res) => {
 };
 exports.getTeacherRatio = async (id) => {
   const contractList = await Contract.find({ teacherID: id, isDeleted: false });
-  const successList = contractList.filter((ele) => ele.status === 'Thành công');
+  const successList = contractList.filter((ele) => ele.status == 'Thành công');
   const successRatio = contractList.length != 0
     ? (successList.length / contractList.length) * 100 : 100;
   let sum = 0;
@@ -59,7 +59,7 @@ exports.getDetailTeacher = async (req, res) => {
   const result = await this.getTeacherRatio(id);
   teacher.successRatio = result.successRatio;
   teacher.rating = result.rating;
-  teacher.history = result.history.filter((ele) => ele.status === 'Thành công');
+  teacher.history = result.history.filter((ele) => ele.status == 'Thành công');
   return res.status(200).send({
     message: teacher,
   });
@@ -144,7 +144,7 @@ exports.editMajorSkill = (req, res) => {
       });
     });
 };
-const checkPrice = (price, type) => {
+const checkPrice = (price, type, name) => {
   switch (type) {
     case 1:
       return price < 100000;
@@ -161,8 +161,9 @@ exports.filterTeacher = async (req, res) => {
   const { local, type, skill } = req.body;
   const user = await User.find({ type: 'Người dạy' });
   const result = user.filter((ele) => (local ? ele.address.district === local : true)
-    && (type ? checkPrice(ele.price, type) : true)
+    && (type ? checkPrice(ele.price, type,ele.username) : true)
     && (skill ? ele.skill.include(skill) : true));
+  console.log(result)
   res.status(200).send({
     user: result,
   });
