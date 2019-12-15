@@ -1,3 +1,4 @@
+/* eslint-disable eqeqeq */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-underscore-dangle */
 const Contract = require('../models/contracts');
@@ -117,14 +118,14 @@ exports.reportContract = async (req, res) => {
 // };
 
 exports.getStudentContract = async (id) => {
-  const contractList = await Contract.find({ studentID: id, isDeleted: false });
-  const teacherList = await Teacher.find();
-  const contracts = contractList.map((element) => {
-    const elem = teacherList.find((ele) => ele._id === element.teacherID);
-    element.teacherID = elem.username;
-    return element;
+  const contractList = await Contract.find({ studentID: id });
+  const teacherList = await Teacher.find({type: 'Người dạy' });
+  const list = contractList.map((element) => {
+    const elem = teacherList.find((ele) => String(element.teacherID) == String(ele._id));
+    const copy = { ...element.toObject(), teacherID: elem.username };
+    return copy;
   });
-  return contracts;
+  return list;
 };
 
 exports.payment = async (req, res) => {

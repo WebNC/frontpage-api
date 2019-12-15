@@ -37,11 +37,11 @@ exports.getTeacherRatio = async (id) => {
     income += ele.value;
   });
   const rating = contractList.length != 0 ? (sum / contractList.length) : 5;
-  const teacherList = await User.find();
+  const teacherList = await User.find({ type: 'Người học' });
   const contracts = contractList.map((element) => {
-    const elem = teacherList.find((ele) => ele._id === element.studentID);
-    element.studentID = elem.username;
-    return element;
+    const elem = teacherList.find((ele) => String(element.studentID) == String(ele._id));
+    const copy = { ...element.toObject(), studentID: elem.username };
+    return copy;
   });
   const history = contracts;
   return {
