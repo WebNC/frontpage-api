@@ -356,10 +356,20 @@ exports.resetPassword = async (req, res) => {
 };
 exports.readContract = async (req, res) => {
   const { id } = req.params;
-  const result = await Contract.findById(id);
-  if (result) {
+  const contract = await Contract.findById(id);
+  const teacher = await User.findById(contract.teacherID);
+  const student = await User.findById(contract.studentID);
+  const skillL = await Skill.find();
+  const skillList = contract.skill.map((element) => {
+    const ele = skillL.find((elem) => elem._id == element);
+    return { id: ele._id, name: ele.name };
+  });
+  contract.skill = skillList;
+  if (contract) {
     res.status(200).send({
-      contract: result,
+      contract,
+      teacher,
+      student,
     });
   } else {
     res.status(500).send({
