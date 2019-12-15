@@ -1,5 +1,8 @@
+/* eslint-disable no-param-reassign */
+/* eslint-disable no-underscore-dangle */
 const Contract = require('../models/contracts');
 const Report = require('../models/reports');
+const Teacher = require('../models/users');
 
 exports.requestContract = async (req, res) => {
   const contractM = new Contract({
@@ -114,8 +117,14 @@ exports.reportContract = async (req, res) => {
 // };
 
 exports.getStudentContract = async (id) => {
-  const contractList = await Contract.find({ studentID: id });
-  return contractList;
+  const contractList = await Contract.find({ studentID: id, isDeleted: false });
+  const teacherList = await Teacher.find();
+  const contracts = contractList.map((element) => {
+    const elem = teacherList.find((ele) => ele._id === element.teacherID);
+    element.teacherID = elem.username;
+    return element;
+  });
+  return contracts;
 };
 
 exports.payment = async (req, res) => {

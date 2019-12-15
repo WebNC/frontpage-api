@@ -37,7 +37,13 @@ exports.getTeacherRatio = async (id) => {
     income += ele.value;
   });
   const rating = contractList.length != 0 ? (sum / contractList.length) : 5;
-  const history = contractList;
+  const teacherList = await User.find();
+  const contracts = contractList.map((element) => {
+    const elem = teacherList.find((ele) => ele._id === element.studentID);
+    element.teacherID = elem.username;
+    return element;
+  });
+  const history = contracts;
   return {
     successRatio,
     rating,
