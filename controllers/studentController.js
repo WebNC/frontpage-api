@@ -1,10 +1,11 @@
-/* eslint-disable linebreak-style */
+/* eslint-disable eqeqeq */
+/* eslint-disable no-param-reassign */
+/* eslint-disable no-underscore-dangle */
 const Contract = require('../models/contracts');
 const Report = require('../models/reports');
 const Teacher = require('../models/users');
 
 exports.requestContract = async (req, res) => {
-  console.log(res.body);
   const contractM = new Contract({
     studentID: req.body.studentID,
     teacherID: req.body.teacherID,
@@ -14,7 +15,6 @@ exports.requestContract = async (req, res) => {
     skill: req.body.skill,
     value: req.body.value,
     address: req.body.address,
-    isDeleted: false,
   });
   try {
     await contractM.save();
@@ -122,7 +122,13 @@ exports.getStudentContract = async (id) => {
   const teacherList = await Teacher.find({ type: 'Người dạy' });
   const list = contractList.map((element) => {
     const elem = teacherList.find((ele) => String(element.teacherID) == String(ele._id));
-    const copy = { ...element.toObject(), teacherID: elem.username };
+    let copy = {}
+    if(elem) {
+      copy = { ...element.toObject(), teacherID: elem.username };
+    }
+    else {
+      copy = element.toObject();
+    }
     return copy;
   });
   return list;

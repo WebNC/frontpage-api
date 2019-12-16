@@ -22,8 +22,9 @@ exports.getNumberUserTeacher = async (req, res) => {
   });
 };
 exports.getTeacherRatio = async (id) => {
-  const contractList = await Contract.find({ teacherID: id, isDeleted: false });
-  const successList = contractList.filter((ele) => ele.status == 'Thành công');
+  //const contractList = await Contract.find({ teacherID: id, isDeleted: false });
+  const contractList = await Contract.find({ teacherID: id });
+  const successList = contractList.filter((ele) => ele.status === 'Đã chấp nhận');
   const successRatio = contractList.length != 0
     ? (successList.length / contractList.length) * 100 : 100;
   let sum = 0;
@@ -40,7 +41,13 @@ exports.getTeacherRatio = async (id) => {
   const teacherList = await User.find({ type: 'Người học' });
   const contracts = contractList.map((element) => {
     const elem = teacherList.find((ele) => String(element.studentID) == String(ele._id));
-    const copy = { ...element.toObject(), studentID: elem.username };
+    let copy = {}
+    if(elem) {
+      copy = { ...element.toObject(), studentID: elem.username };
+    }
+    else {
+      copy = element.toObject();
+    }
     return copy;
   });
   const history = contracts;
@@ -65,7 +72,7 @@ exports.getDetailTeacher = async (req, res) => {
   const result = await this.getTeacherRatio(id);
   teacher.successRatio = result.successRatio;
   teacher.rating = result.rating;
-  teacher.history = result.history.filter((ele) => ele.status == 'Thành công');
+  teacher.history = result.history.filter((ele) => ele.status === 'Đã chấp nhận');
   return res.status(200).send({
     message: teacher,
   });
@@ -162,7 +169,7 @@ exports.editMajorSkill = (req, res) => {
       });
     });
 };
-const checkPrice = (price, type, name) => {
+const checkPrice = (price, type) => {
   switch (type) {
     case 1:
       return price < 100000;
@@ -179,9 +186,8 @@ exports.filterTeacher = async (req, res) => {
   const { local, type, skill } = req.body;
   const user = await User.find({ type: 'Người dạy' });
   const result = user.filter((ele) => (local ? ele.address.district === local : true)
-    && (type ? checkPrice(ele.price, type,ele.username) : true)
+    && (type ? checkPrice(ele.price, type) : true)
     && (skill ? ele.skill.include(skill) : true));
-  console.log(result)
   res.status(200).send({
     user: result,
   });
@@ -195,7 +201,7 @@ exports.contractsAccept = async (req, res) => {
     if (status == 'Từ chối') {
       result.status = 'Từ chối';
     } else {
-      result.status = 'Thành công';
+      result.status = 'Đã chấp nhận';
     }
     res.status(200).send({
       contract: result,
