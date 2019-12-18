@@ -22,4 +22,7 @@ router.post('/filter', teacherController.filterTeacher);
 // none
 router.post('/contract', teacherController.contractsAccept);
 
+
+//
+router.get('/income/:id', teacherController.getIncomeData);
 module.exports = router;

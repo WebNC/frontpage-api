@@ -22,7 +22,7 @@ exports.getNumberUserTeacher = async (req, res) => {
   });
 };
 exports.getTeacherRatio = async (id) => {
-  //const contractList = await Contract.find({ teacherID: id, isDeleted: false });
+  // const contractList = await Contract.find({ teacherID: id, isDeleted: false });
   const contractList = await Contract.find({ teacherID: id });
   const successList = contractList.filter((ele) => ele.status === 'Đã chấp nhận');
   const successRatio = contractList.length != 0
@@ -41,11 +41,10 @@ exports.getTeacherRatio = async (id) => {
   const teacherList = await User.find({ type: 'Người học' });
   const contracts = contractList.map((element) => {
     const elem = teacherList.find((ele) => String(element.studentID) == String(ele._id));
-    let copy = {}
-    if(elem) {
+    let copy = {};
+    if (elem) {
       copy = { ...element.toObject(), studentID: elem.username };
-    }
-    else {
+    } else {
       copy = element.toObject();
     }
     return copy;
@@ -114,8 +113,6 @@ exports.editInfo = (req, res) => {
       });
     });
 };
-
-
 exports.editIntro = (req, res) => {
   const {
     id,
@@ -212,4 +209,21 @@ exports.contractsAccept = async (req, res) => {
     });
   }
   return res;
+};
+
+
+exports.getIncomeData = async (req, res) => {
+  const { id } = req.params;
+  const data = [];
+  for (let i = 0; i < 12; i += 1) {
+    data.push({ month: `Tháng ${i + 1}`, income: 0 });
+  }
+  const date = new Date();
+  const contract = await Contract.find({ statusPay: true, teacherID: id });
+  contract.forEach((ele) => {
+    if (ele.payDate.getYear() === date.getYear()) {
+      data[ele.payDate.getMonth()].income += (ele.value / 1000000);
+    }
+  });
+  res.status(200).send({ data });
 };
