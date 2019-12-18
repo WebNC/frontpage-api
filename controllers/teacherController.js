@@ -43,7 +43,7 @@ exports.getTeacherRatio = async (id) => {
     const elem = teacherList.find((ele) => String(element.studentID) == String(ele._id));
     let copy = {}
     if(elem) {
-      copy = { ...element.toObject(), studentID: elem.username };
+      copy = { ...element.toObject(), studentName: elem.username };
     }
     else {
       copy = element.toObject();
@@ -195,17 +195,23 @@ exports.filterTeacher = async (req, res) => {
 
 
 exports.contractsAccept = async (req, res) => {
-  const { id, status } = req.body.status;
+  const { id, status } = req.body;
+  console.log(req.body);
   const result = await Contract.findById(id);
   if (result) {
     if (status == 'Từ chối') {
       result.status = 'Từ chối';
+      await result.save();
+      res.status(200).send({
+        message: 'Đã từ chối hợp đồng',
+      });
     } else {
       result.status = 'Đã chấp nhận';
+      await result.save();
+      res.status(200).send({
+        message: 'Đã chấp nhận hợp đồng',
+      });
     }
-    res.status(200).send({
-      contract: result,
-    });
   } else {
     res.status(500).send({
       message: 'Cannot find contract',

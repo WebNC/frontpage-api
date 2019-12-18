@@ -45,6 +45,7 @@ exports.register = (req, res) => {
             if (req.body.type == 'Người học') {
               sendMailActive(data._id, data.email);
             }
+            console.log(data);
             res.send({ user: data.toAuthJSON() });
           })
           .catch((err) => {
@@ -193,6 +194,9 @@ exports.registerTeacher = (req, res) => {
         // write something
         await newUser.save();
         sendMailActive(newUser._id, newUser.email);
+        console.log(newUser._id);
+        console.log(newUser.email);
+        console.log('đã gửi mail');
         res.status(200).send({
           message: 'Success',
         });

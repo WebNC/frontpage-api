@@ -17,8 +17,8 @@ const ContractSchema = new Schema({
     // Đã thanh toán, chưa thanh toán
     statusPay: { type: Boolean, default: false },
     rating: { type: Number, default: 5 },
-    // Array object {id,date,comment}
-    comment: { type: Array },
+    // Object {id,date,comment}
+    comment: { type: Object },
     value: { type: Number },
     isDeleted: { type: Boolean, default: false },
     createAt: { type: Date, default: Date.now() },
