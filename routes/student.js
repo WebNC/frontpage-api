@@ -13,7 +13,9 @@ router.post('/contract/delete', studentController.deleteContract);
 // router.post('/contract/comment', studentController.commentContract);
 router.post('/contract/evaluate', studentController.evaluateContract);
 router.post('/contract/report', studentController.reportContract);
-
+router.post('/contract/complete', studentController.complete);
 
 router.post('/payment', studentController.payment);
+
+
 module.exports = router;

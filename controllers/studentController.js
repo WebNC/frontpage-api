@@ -124,7 +124,9 @@ exports.getStudentContract = async (id) => {
   const contractList = await Contract.find({ studentID: id });
   const teacherList = await Teacher.find({ type: 'Người dạy' });
   const list = contractList.map((element) => {
-    const elem = teacherList.find((ele) => String(element.teacherID) == String(ele._id));
+    const elem = teacherList.find(
+      (ele) => String(element.teacherID) == String(ele._id),
+    );
     let copy = {};
     if (elem) {
       copy = { ...element.toObject(), teacherName: elem.username };
@@ -143,6 +145,42 @@ exports.payment = async (req, res) => {
     result.statusPay = true;
     result.status = 'Đã thanh toán';
     result.payDate = new Date();
+    await result.save();
+    res.status(200).send({
+      contract: result,
+    });
+  } else {
+    res.status(500).send({
+      message: 'Không tìm thấy hợp đồng',
+    });
+  }
+  return res;
+};
+
+exports.payment = async (req, res) => {
+  const { id } = req.body;
+  const result = await Contract.findById(id);
+  if (result) {
+    result.statusPay = true;
+    result.status = 'Đã thanh toán';
+    result.payDate = new Date();
+    await result.save();
+    res.status(200).send({
+      contract: result,
+    });
+  } else {
+    res.status(500).send({
+      message: 'Không tìm thấy hợp đồng',
+    });
+  }
+  return res;
+};
+
+exports.complete = async (req, res) => {
+  const { id } = req.body;
+  const result = await Contract.findById(id);
+  if (result) {
+    result.status = 'Đã hoàn thành';
     await result.save();
     res.status(200).send({
       contract: result,
