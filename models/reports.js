@@ -5,8 +5,10 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 const ReportSchema = new Schema({
-    courseID: { type: Schema.Types.ObjectId, required: true },
-    userID: { type: Schema.Types.ObjectId, required: true },
+    teacherID: { type: Schema.Types.ObjectId, required: true },
+    studentID: { type: Schema.Types.ObjectId, required: true },
+    teacherName: { type: String },
+    studentName: { type: String },
     date: { type: Date, default: Date.now() },
     content: { type: String },
     // solved, unsolve

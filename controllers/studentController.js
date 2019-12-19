@@ -101,8 +101,10 @@ exports.deleteContract = async (req, res) => {
 
 exports.reportContract = async (req, res) => {
   const report = new Report({
-    courseID: req.body.courseID,
-    userID: req.body.userID,
+    teacherID: req.body.teacherID,
+    studentID: req.body.studentID,
+    teacherName: req.body.teacherName,
+    studentName: req.body.studentName,
     content: req.body.content,
   });
   try {
