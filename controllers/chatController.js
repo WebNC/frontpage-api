@@ -60,9 +60,19 @@ exports.getPartnerList = async (req, res) => {
   // result.sort(sortDate);
   const list = result.map((ele) => {
     const elem = user.find((element) => String(element._id) === String(ele[partner]));
-    let copy = { partnerID: '', name: '', unseen: '' };
+    let copy = {
+      partnerID: '',
+      name: '',
+      unseen: '',
+      avatar: '',
+    };
     if (elem) {
-      copy = { partnerID: ele[partner], name: elem.username, unseen: ele[unseen] };
+      copy = {
+        partnerID: ele[partner],
+        name: elem.username,
+        unseen: ele[unseen],
+        avatar: elem.url,
+      };
     }
     return copy;
   });
@@ -70,10 +80,13 @@ exports.getPartnerList = async (req, res) => {
 };
 
 exports.createRoom = async (req, res) => {
-  const room = new Chat({
-    teacherID: req.body.teacherID,
-    studentID: req.body.studentID,
-  });
-  await room.save();
+  let room = await Chat.find({ teacherID: req.body.teacherID, studentID: req.body.studentID });
+  if (!room) {
+    room = new Chat({
+      teacherID: req.body.teacherID,
+      studentID: req.body.studentID,
+    });
+    await room.save();
+  }
   return res.status(200).send({ chat: room });
 };
