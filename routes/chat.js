@@ -7,4 +7,5 @@ const chatController = require('../controllers/chatController');
 router.post('/send-chat', chatController.sendChat);
 router.post('/get-chat', chatController.getChat);
 router.post('/get-partner-list', chatController.getPartnerList);
+router.post('/create-room', chatController.createRoom);
 module.exports = router;

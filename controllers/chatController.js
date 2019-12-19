@@ -3,6 +3,9 @@
 const Chat = require('../models/chats');
 const User = require('../models/users');
 
+// const sortDate = (a, b) => {
+//   return a.lastUpdate < b.lastUpdate || a.content.length !== 0;
+// };
 // req: teacherID, studentID, type
 exports.sendChat = async (req, res) => {
   let result = await Chat.find({ studentID: req.body.studentID, teacherID: req.body.teacherID });
@@ -27,6 +30,7 @@ exports.sendChat = async (req, res) => {
     result.teacherUnseen += req.body.type === 'Người học' ? 1 : 0;
     result.studentUnseen += req.body.type === 'Người học' ? 0 : 1;
   }
+  result.lastUpdate = Date.now();
   await result.save();
   const id = req.body.type === 'Người học' ? req.body.teacherID : req.body.studentID;
   const user = await User.findById(id);
@@ -53,7 +57,7 @@ exports.getPartnerList = async (req, res) => {
   const user = await User.find();
   const partner = req.body.type === 'Người học' ? 'TeacherID' : 'StudentID';
   const unseen = req.body.type === 'Người học' ? 'studentUnseen' : 'teacherUnseen';
-
+  // result.sort(sortDate);
   const list = result.map((ele) => {
     const elem = user.find((element) => String(element._id) === String(ele[partner]));
     let copy = { partnerID: '', name: '', unseen: '' };
@@ -63,4 +67,13 @@ exports.getPartnerList = async (req, res) => {
     return copy;
   });
   return res.status(200).send({ chat: list });
+};
+
+exports.createRoom = async (req, res) => {
+  const room = new Chat({
+    teacherID: req.body.teacherID,
+    studentID: req.body.studentID,
+  });
+  await room.save();
+  return res.status(200).send({ chat: room });
 };

@@ -9,8 +9,9 @@ const ReportSchema = new Schema({
     studentID: { type: Schema.Types.ObjectId, required: true },
     // { time: Date,from: ObjectID, content: String}
     content: { type: Array },
-    teacherUnseen: { type: Number },
-    studentUnseen: { type: Number },
+    teacherUnseen: { type: Number, default: 0 },
+    studentUnseen: { type: Number, default: 0 },
+    lastUpdate: { type: Date, default: Date.now },
 });
 
 module.exports = mongoose.model('Chat', ReportSchema);
