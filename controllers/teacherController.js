@@ -5,11 +5,12 @@ const User = require('../models/users');
 const Skill = require('../models/skills');
 const Contract = require('../models/contracts');
 
+
 exports.getAllUserTeacher = async (req, res) => {
   const { page } = req.params;
-  const pageSize = 25;
+  const pageSize = 10;
   const teacherL = await User.find({ type: 'Người dạy', isBlocked: false })
-    .skip(page * pageSize)
+    .skip((page - 1) * pageSize)
     .limit(pageSize);
   return res.status(200).send({
     message: teacherL,
@@ -25,25 +26,21 @@ exports.getTeacherRatio = async (id) => {
   // const contractList = await Contract.find({ teacherID: id, isDeleted: false });
   const contractList = await Contract.find({ teacherID: id });
   const successList = contractList.filter((ele) => ele.status === 'Đã chấp nhận');
-  const successRatio = contractList.length != 0
+  let successRatio = contractList.length != 0
     ? (successList.length / contractList.length) * 100 : 100;
   let sum = 0;
   contractList.forEach((element) => {
     sum += element.rating;
   });
-
-  let income = 0;
-  const payList = successList.filter((ele) => ele.statusPay === true);
-  payList.forEach((ele) => {
-    income += ele.value;
-  });
-  const rating = contractList.length != 0 ? (sum / contractList.length) : 5;
+  successRatio = Math.round(successRatio * 100) / 100;
+  let rating = contractList.length != 0 ? (sum / contractList.length) : 5;
+  rating = Math.round(rating * 100) / 100;
   const teacherList = await User.find({ type: 'Người học' });
   const contracts = contractList.map((element) => {
     const elem = teacherList.find((ele) => String(element.studentID) == String(ele._id));
     let copy = {};
     if (elem) {
-      copy = { ...element.toObject(), studentID: elem.username };
+      copy = { ...element.toObject(), studentName: elem.username };
     } else {
       copy = element.toObject();
     }
@@ -54,24 +51,24 @@ exports.getTeacherRatio = async (id) => {
     successRatio,
     rating,
     history,
-    income,
   };
 };
 
 exports.getDetailTeacher = async (req, res) => {
   const { id } = req.params;
   const teacher = await User.findById(id);
-  teacher.passwordHash = null;
-  const skillL = await Skill.find();
-  const teacherList = teacher.skill.map((element) => {
-    const ele = skillL.find((elem) => elem._id == element);
-    return { id: ele._id, name: ele.name };
-  });
-  teacher.skill = teacherList;
   const result = await this.getTeacherRatio(id);
   teacher.successRatio = result.successRatio;
   teacher.rating = result.rating;
+  await teacher.save();
   teacher.history = result.history.filter((ele) => ele.status === 'Đã chấp nhận');
+  teacher.passwordHash = null;
+  const skillL = await Skill.find();
+  const teacherList = teacher.skill.map((element) => {
+    const ele = skillL.find((elem) => String(elem._id) == String(element));
+    return { id: ele._id, name: ele.name };
+  });
+  teacher.skill = teacherList;
   return res.status(200).send({
     message: teacher,
   });
@@ -181,10 +178,10 @@ const checkPrice = (price, type) => {
 
 exports.filterTeacher = async (req, res) => {
   const { local, type, skill } = req.body;
-  const user = await User.find({ type: 'Người dạy' });
-  const result = user.filter((ele) => (local ? ele.address.district === local : true)
-    && (type ? checkPrice(ele.price, type) : true)
-    && (skill ? ele.skill.include(skill) : true));
+  const user = await User.find({ type: 'Người dạy', isBlocked: false });
+  const result = user.filter((ele) => (local && ele.address ? ele.address.district === local : true)
+    && (type && ele.price ? checkPrice(ele.price, type) : true)
+    && (skill && ele.skill ? ele.skill.includes(skill) : true));
   res.status(200).send({
     user: result,
   });
@@ -192,17 +189,22 @@ exports.filterTeacher = async (req, res) => {
 
 
 exports.contractsAccept = async (req, res) => {
-  const { id, status } = req.body.status;
+  const { id, status } = req.body;
   const result = await Contract.findById(id);
   if (result) {
     if (status == 'Từ chối') {
       result.status = 'Từ chối';
+      await result.save();
+      res.status(200).send({
+        message: 'Đã từ chối hợp đồng',
+      });
     } else {
       result.status = 'Đã chấp nhận';
+      await result.save();
+      res.status(200).send({
+        message: 'Đã chấp nhận hợp đồng',
+      });
     }
-    res.status(200).send({
-      contract: result,
-    });
   } else {
     res.status(500).send({
       message: 'Cannot find contract',

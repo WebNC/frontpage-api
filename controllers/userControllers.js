@@ -208,11 +208,6 @@ exports.me = async (req, res) => {
   if (!user) {
     res.sendStatus(400);
   } else {
-    const userList = user.skill.map((element) => {
-      const ele = skillL.find((elem) => elem._id == element);
-      return { id: ele._id, name: ele.name };
-    });
-    user.skill = userList;
     if (user.type == 'Người học') {
       const history = await StudentController.getStudentContract(user._id);
       user.history = history;
@@ -220,9 +215,14 @@ exports.me = async (req, res) => {
       const result = await TeacherController.getTeacherRatio(id);
       user.successRatio = result.successRatio;
       user.rating = result.rating;
+      await user.save();
       user.history = result.history;
-      user.income = result.income;
     }
+    const userList = user.skill.map((element) => {
+      const ele = skillL.find((elem) => elem._id == element);
+      return { id: ele._id, name: ele.name };
+    });
+    user.skill = userList;
     res.send(user);
   }
   return res;
