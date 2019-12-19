@@ -7,10 +7,10 @@ const { Schema } = mongoose;
 const ReportSchema = new Schema({
     teacherID: { type: Schema.Types.ObjectId, required: true },
     studentID: { type: Schema.Types.ObjectId, required: true },
-    // { time: Date, content: String}
+    // { time: Date,from: ObjectID, content: String}
     content: { type: Array },
     teacherUnseen: { type: Number },
-    studentUnseen: { type: Number }
+    studentUnseen: { type: Number },
 });
 
 module.exports = mongoose.model('Chat', ReportSchema);

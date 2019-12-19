@@ -11,6 +11,7 @@ const usersRouter = require('./routes/users');
 const uploadRouter = require('./routes/upload');
 const teacherRouter = require('./routes/teacher');
 const studentRouter = require('./routes/student');
+const chatRouter = require('./routes/chat');
 
 const app = express();
 
@@ -43,7 +44,7 @@ app.use('/users', usersRouter);
 app.use('/upload', uploadRouter);
 app.use('/teachers', teacherRouter);
 app.use('/student', studentRouter);
-
+app.use('/chat', chatRouter);
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
   next(createError(404));
