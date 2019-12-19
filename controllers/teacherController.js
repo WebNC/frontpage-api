@@ -25,7 +25,7 @@ exports.getNumberUserTeacher = async (req, res) => {
 exports.getTeacherRatio = async (id) => {
   // const contractList = await Contract.find({ teacherID: id, isDeleted: false });
   const contractList = await Contract.find({ teacherID: id });
-  const successList = contractList.filter((ele) => ele.status === 'Đã chấp nhận');
+  const successList = contractList.filter((ele) => ele.status === 'Đã hoàn thành');
   let successRatio = contractList.length != 0
     ? (successList.length / contractList.length) * 100 : 100;
   let sum = 0;
@@ -61,7 +61,7 @@ exports.getDetailTeacher = async (req, res) => {
   teacher.successRatio = result.successRatio;
   teacher.rating = result.rating;
   await teacher.save();
-  teacher.history = result.history.filter((ele) => ele.status === 'Đã chấp nhận');
+  teacher.history = result.history.filter((ele) => ele.status === 'Đã hoàn thành');
   teacher.passwordHash = null;
   const skillL = await Skill.find();
   const teacherList = teacher.skill.map((element) => {
@@ -221,7 +221,7 @@ exports.getIncomeData = async (req, res) => {
     data.push({ month: `Tháng ${i + 1}`, income: 0 });
   }
   const date = new Date();
-  const contract = await Contract.find({ statusPay: true, teacherID: id });
+  const contract = await Contract.find({ status: 'Đã hoàn thành', teacherID: id });
   contract.forEach((ele) => {
     if (ele.payDate.getYear() === date.getYear()) {
       data[ele.payDate.getMonth()].income += (ele.value / 1000000);
