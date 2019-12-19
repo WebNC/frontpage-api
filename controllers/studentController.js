@@ -103,8 +103,6 @@ exports.reportContract = async (req, res) => {
   const report = new Report({
     teacherID: req.body.teacherID,
     studentID: req.body.studentID,
-    teacherName: req.body.teacherName,
-    studentName: req.body.studentName,
     content: req.body.content,
   });
   try {
