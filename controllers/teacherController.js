@@ -25,15 +25,16 @@ exports.getNumberUserTeacher = async (req, res) => {
 exports.getTeacherRatio = async (id) => {
   // const contractList = await Contract.find({ teacherID: id, isDeleted: false });
   const contractList = await Contract.find({ teacherID: id });
-  const successList = contractList.filter((ele) => ele.status === 'Đã hoàn thành');
+  const completeList = contractList.filter((ele) => ele.status === 'Đã hoàn thành');
+  const successList = contractList.filter((ele) => (ele.status !== 'Đang chờ' && ele.status !== 'Từ chối'));
   let successRatio = contractList.length != 0
-    ? (successList.length / contractList.length) * 100 : 100;
+    ? (completeList.length / successList.length) * 100 : 100;
   let sum = 0;
-  contractList.forEach((element) => {
+  completeList.forEach((element) => {
     sum += element.rating;
   });
   successRatio = Math.round(successRatio * 100) / 100;
-  let rating = contractList.length != 0 ? (sum / contractList.length) : 5;
+  let rating = completeList.length != 0 ? (sum / completeList.length) : 5;
   rating = Math.round(rating * 100) / 100;
   const teacherList = await User.find({ type: 'Người học' });
   const contracts = contractList.map((element) => {

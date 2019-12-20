@@ -9,7 +9,7 @@ const User = require('../models/users');
 // req: teacherID, studentID, type
 exports.sendChat = async (req, res) => {
   let result = await Chat.find({ studentID: req.body.studentID, teacherID: req.body.teacherID });
-  if (!result) {
+  if (result.length === 0) {
     result = new Chat({
       teacherID: req.body.teacherID,
       studentID: req.body.studentID,
@@ -22,26 +22,26 @@ exports.sendChat = async (req, res) => {
       studentUnseen: req.body.type === 'Người học' ? 0 : 1,
     });
   } else {
-    result.content.push({
+    result[0].content.push({
       time: Date.now(),
       from: req.body.type === 'Người học' ? req.body.studentID : req.body.teacherID,
       content: req.body.content,
     });
-    result.teacherUnseen += req.body.type === 'Người học' ? 1 : 0;
-    result.studentUnseen += req.body.type === 'Người học' ? 0 : 1;
+    result[0].teacherUnseen += req.body.type === 'Người học' ? 1 : 0;
+    result[0].studentUnseen += req.body.type === 'Người học' ? 0 : 1;
   }
-  result.lastUpdate = Date.now();
-  await result.save();
-  const id = req.body.type === 'Người học' ? req.body.teacherID : req.body.studentID;
-  const user = await User.findById(id);
-  return res.status(200).send({ chat: result, partner: user });
+  result[0].lastUpdate = Date.now();
+  await result[0].save();
+  const result1 = await Chat.find({ studentID: req.body.studentID, teacherID: req.body.teacherID });
+  return res.status(200).send({ chat: result1 });
 };
 // req.body: studentID,teacherID, type
 exports.getChat = async (req, res) => {
   const result = await Chat.find({ studentID: req.body.studentID, teacherID: req.body.teacherID });
   const id = req.body.type === 'Người học' ? req.body.teacherID : req.body.studentID;
-  result.teacherUnseen = req.body.type === 'Người học' ? result.teacherUnseen : 0;
-  result.studentUnseen = req.body.type === 'Người học' ? 0 : result.studentUnseen;
+  result[0].teacherUnseen = req.body.type === 'Người học' ? result[0].teacherUnseen : 0;
+  result[0].studentUnseen = req.body.type === 'Người học' ? 0 : result[0].studentUnseen;
+  await result[0].save();
   const user = await User.findById(id);
   return res.status(200).send({ chat: result, partner: user });
 };
@@ -49,13 +49,13 @@ exports.getChat = async (req, res) => {
 // req.body: ID, type
 exports.getPartnerList = async (req, res) => {
   let result = [];
-  if (req.body.type === 'Người học') {
+  if (req.body.type == 'Người học') {
     result = await Chat.find({ studentID: req.body.ID });
   } else {
     result = await Chat.find({ teacherID: req.body.ID });
   }
   const user = await User.find();
-  const partner = req.body.type === 'Người học' ? 'TeacherID' : 'StudentID';
+  const partner = req.body.type === 'Người học' ? 'teacherID' : 'studentID';
   const unseen = req.body.type === 'Người học' ? 'studentUnseen' : 'teacherUnseen';
   // result.sort(sortDate);
   const list = result.map((ele) => {
@@ -81,12 +81,12 @@ exports.getPartnerList = async (req, res) => {
 
 exports.createRoom = async (req, res) => {
   let room = await Chat.find({ teacherID: req.body.teacherID, studentID: req.body.studentID });
-  if (!room) {
+  if (room.length === 0) {
     room = new Chat({
       teacherID: req.body.teacherID,
       studentID: req.body.studentID,
     });
     await room.save();
+    return res.status(200).send({ chat: room });
   }
-  return res.status(200).send({ chat: room });
 };
