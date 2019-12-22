@@ -148,7 +148,7 @@ exports.payment = async (req, res) => {
   if (result) {
     result.statusPay = true;
     result.status = 'Đã thanh toán';
-    result.payDate = new Date();
+    //result.payDate = new Date();
     await result.save();
     res.status(200).send({
       contract: result,
@@ -161,30 +161,31 @@ exports.payment = async (req, res) => {
   return res;
 };
 
-exports.payment = async (req, res) => {
-  const { id } = req.body;
-  const result = await Contract.findById(id);
-  if (result) {
-    result.statusPay = true;
-    result.status = 'Đã thanh toán';
-    result.payDate = new Date();
-    await result.save();
-    res.status(200).send({
-      contract: result,
-    });
-  } else {
-    res.status(500).send({
-      message: 'Không tìm thấy hợp đồng',
-    });
-  }
-  return res;
-};
+// exports.payment = async (req, res) => {
+//   const { id } = req.body;
+//   const result = await Contract.findById(id);
+//   if (result) {
+//     result.statusPay = true;
+//     result.status = 'Đã thanh toán';
+//     result.payDate = new Date();
+//     await result.save();
+//     res.status(200).send({
+//       contract: result,
+//     });
+//   } else {
+//     res.status(500).send({
+//       message: 'Không tìm thấy hợp đồng',
+//     });
+//   }
+//   return res;
+// };
 
 exports.complete = async (req, res) => {
   const { id } = req.body;
   const result = await Contract.findById(id);
   if (result) {
     result.status = 'Đã hoàn thành';
+    result.payDate = new Date();
     await result.save();
     res.status(200).send({
       contract: result,
