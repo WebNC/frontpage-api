@@ -222,7 +222,7 @@ exports.getIncomeData = async (req, res) => {
     data.push({ month: `Tháng ${i + 1}`, income: 0 });
   }
   const date = new Date();
-  const contract = await Contract.find({ status: 'Đã hoàn thành', teacherID: id });
+  const contract = await Contract.find({ $or: [{ status: 'Đã hoàn thành' }, { status: 'Đang giải quyết' }], teacherID: id });
   contract.forEach((ele) => {
     if (ele.payDate.getYear() === date.getYear()) {
       data[ele.payDate.getMonth()].income += (ele.value / 1000000);

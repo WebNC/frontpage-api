@@ -7,6 +7,7 @@ const { Schema } = mongoose;
 const ReportSchema = new Schema({
     teacherID: { type: Schema.Types.ObjectId, required: true },
     studentID: { type: Schema.Types.ObjectId, required: true },
+    contractID: { type: Schema.Types.ObjectId },
     date: { type: Date, default: Date.now() },
     content: { type: String },
     // solved, unsolve

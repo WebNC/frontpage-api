@@ -49,7 +49,7 @@ exports.getChat = async (req, res) => {
 // req.body: ID, type
 exports.getPartnerList = async (req, res) => {
   let result = [];
-  if (req.body.type == 'Người học') {
+  if (req.body.type === 'Người học') {
     result = await Chat.find({ studentID: req.body.ID });
   } else {
     result = await Chat.find({ teacherID: req.body.ID });
@@ -87,6 +87,7 @@ exports.createRoom = async (req, res) => {
       studentID: req.body.studentID,
     });
     await room.save();
-    return res.status(200).send({ chat: room });
+    res.status(200).send({ chat: room });
   }
+  return res;
 };

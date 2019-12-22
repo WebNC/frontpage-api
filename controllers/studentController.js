@@ -103,10 +103,14 @@ exports.reportContract = async (req, res) => {
   const report = new Report({
     teacherID: req.body.teacherID,
     studentID: req.body.studentID,
+    contractID: req.body.contractID,
     content: req.body.content,
   });
+  const contract = await Contract.findById(req.body.contractID);
+  contract.status = 'Đang giải quyết';
   try {
     await report.save();
+    await contract.save();
     res.status(200).send({
       message: 'done',
     });
