@@ -148,6 +148,7 @@ exports.loginGoogle = (req, res, next) => {
               email: passportUser.emails[0].value,
               googleId: passportUser.id,
               type: 'Người học',
+              isActived: true,
             });
           } else {
             user.username = passportUser.displayName;

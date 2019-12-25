@@ -5,6 +5,16 @@ const Contract = require('../models/contracts');
 const Report = require('../models/reports');
 const Teacher = require('../models/users');
 
+function compare( a, b ) {
+  if ( a.createAt < b.createAt ) {
+    return 1;
+  }
+  if ( a.createAt > b.createAt ) {
+    return -1;
+  }
+  return 0;
+}
+
 exports.requestContract = async (req, res) => {
   const contractM = new Contract({
     studentID: req.body.studentID,
@@ -139,7 +149,8 @@ exports.getStudentContract = async (id) => {
     }
     return copy;
   });
-  return list;
+  const result = list.sort(compare);
+  return result;
 };
 
 exports.payment = async (req, res) => {

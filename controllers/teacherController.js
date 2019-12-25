@@ -5,6 +5,15 @@ const User = require('../models/users');
 const Skill = require('../models/skills');
 const Contract = require('../models/contracts');
 
+function compare( a, b ) {
+  if ( a.createAt < b.createAt ) {
+    return 1;
+  }
+  if ( a.createAt > b.createAt ) {
+    return -1;
+  }
+  return 0;
+}
 
 exports.getAllUserTeacher = async (req, res) => {
   const { page } = req.params;
@@ -12,8 +21,21 @@ exports.getAllUserTeacher = async (req, res) => {
   const teacherL = await User.find({ type: 'Người dạy', isBlocked: false })
     .skip((page - 1) * pageSize)
     .limit(pageSize);
+  const contractList = await Contract.find();
+  const teachers = teacherL.map((element) => {
+    const elem = contractList.filter((ele) => (String(element._id) == String(ele.teacherID) && ele.status == 'Đã hoàn thành'));
+    let copy = {};
+    if (elem) {
+      copy = { ...element.toObject(), numJob: elem.length };
+    } else {
+      // copy = element.toObject();
+      copy = { ...element.toObject(), numJob: 0 };
+    }
+    return copy;
+  });
+  
   return res.status(200).send({
-    message: teacherL,
+    message: teachers,
   });
 };
 exports.getNumberUserTeacher = async (req, res) => {
@@ -25,10 +47,12 @@ exports.getNumberUserTeacher = async (req, res) => {
 exports.getTeacherRatio = async (id) => {
   // const contractList = await Contract.find({ teacherID: id, isDeleted: false });
   const contractList = await Contract.find({ teacherID: id });
-  const completeList = contractList.filter((ele) => ele.status === 'Đã hoàn thành');
-  const successList = contractList.filter((ele) => (ele.status !== 'Đang chờ' && ele.status !== 'Từ chối'));
+  // const completeList = contractList.filter((ele) => ele.status === 'Đã hoàn thành');
+  // const successList = contractList.filter((ele) => (ele.status !== 'Đang chờ' && ele.status !== 'Từ chối'));
+  const completeList = contractList.filter((ele) => (ele.status === 'Đã hoàn thành' || ele.status === 'Đã hoàn tiền'));
+  const successList = contractList.filter((ele) => ele.status === 'Đã hoàn thành');
   let successRatio = contractList.length != 0
-    ? (completeList.length / successList.length) * 100 : 100;
+    ? (successList.length / completeList.length) * 100 : 100;
   let sum = 0;
   completeList.forEach((element) => {
     sum += element.rating;
@@ -47,7 +71,7 @@ exports.getTeacherRatio = async (id) => {
     }
     return copy;
   });
-  const history = contracts;
+  const history = contracts.sort(compare);
   return {
     successRatio,
     rating,
