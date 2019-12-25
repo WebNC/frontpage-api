@@ -10,16 +10,16 @@ const TeacherController = require('./teacherController');
 const StudentController = require('./studentController');
 const sendMail = require('./maillController');
 const Contract = require('../models/contracts');
-
+require('dotenv').config();
 
 const sendMailActive = async (idUser, email) => {
-  const key = '25698';
+  const key = process.env.ACTIVE_KEY;
   const token = await jwt.sign({ id: idUser }, key);
   sendMail.sendMailActive(email, token);
 };
 
 const sendMailForget = async (idUser, email) => {
-  const key = '150917';
+  const key = process.env.FORGET_KEY;
   const token = await jwt.sign({ id: idUser }, key, { expiresIn: '1h' });
   sendMail.sendMailForget(email, token);
 };
@@ -273,7 +273,7 @@ exports.upload = (req, res) => {
 
 exports.verifiedAccount = async (req, res) => {
   const { token } = req.params;
-  const key = '25698';
+  const key = process.env.ACTIVE_KEY;
   jwt.verify(token, key, async (err, decoded) => {
     if (err) {
       res.status(400).send({
@@ -293,7 +293,7 @@ exports.verifiedAccount = async (req, res) => {
 
 exports.verifiedAccountForget = async (req, res) => {
   const { token } = req.params;
-  const key = '150917';
+  const key = process.env.FORGET_KEY;
   jwt.verify(token, key, async (err, decoded) => {
     if (err) {
       res.status(500).send({
